@@ -1,6 +1,6 @@
 ---
 title: "Tarea 1: Análisis descriptivo, regresión lineal y pruebas de hipótesis"
-author: "Kerry Loaiza Marín"
+author: "Sebastián Mora Rojas"
 #date: '`r format(Sys.Date(), "%d %b, %Y")`'
 date: '21 de Setiembre de 2021'
 pagetitle: 

@@ -1,0 +1,62 @@
+---
+title: "Solucion Tarea 1"
+output: html_document
+author: Ricardo Huapaya, Sebastian Valverde
+date: '`r format(Sys.Date(), "%d %b, %Y")`'
+---
+
+```{r setup, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(readxl)
+setwd("~/Tarea Econometria")
+
+cigs = read_excel("Data/CigarettesB.xlsx")
+
+energy = read_excel("Data/Electricity1970.xlsx")
+
+euroenergy = read_excel("Data/EuroEnergy.xlsx")
+```
+
+## Solución Tarea 1
+
+En este presente documento se procede a realizar un analisis econometrico de diversas bases de datos de interes. Para ello se selecionaron las bases: 2.2 CigarettesB: Cigarette Consumption Data, de 2.6 Electricity1970: Cost Function of Electricity Producers 1970 & 2.7 EuroEnergy: European Energy Consumption Data. La estructura del documento es de un analisis individual en el orden mencionado previemente. Para así al final discutir en una última sección las conclusones de cada analisis.
+
+## Analisis Cigarettes Data
+
+### Resumen Información
+
+```{r cigs}
+summary(cigs)
+```
+
+```{r pressure, echo=FALSE}
+plot(cigs)
+```
+
+## Analisis Energy
+
+### Resumen
+
+```{r}
+
+summary(energy)
+```
+
+```{R}
+
+plot(energy)
+
+```
+
+## Analisis Euroenergy
+
+```{r}
+summary(euroenergy)
+```
+
+```{r}
+plot(euroenergy)
+```
+
+## Conclusión

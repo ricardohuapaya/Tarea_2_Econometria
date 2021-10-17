@@ -1,774 +1,118 @@
 ---
-title: "Tarea 1: Análisis descriptivo, regresión lineal y pruebas de hipótesis"
-author: "Sebastián Mora Rojas"
-#date: '`r format(Sys.Date(), "%d %b, %Y")`'
-date: '21 de Setiembre de 2021'
-pagetitle: 
+title: "Solución Tarea 1"
+author: "Integrantes: PONGAN SU NOMBRE AQUI "
+date: "16/10/2021"
 output:
-  html_document:
-    toc: true
-    toc_float: false
-    collapsed: false
-    smooth_scroll: false
-    theme: unite
-    highlight: tango
-    number_sections: TRUE
-    fig_width: 6
-    fig_height: 4
-    df_print: kable
+  html_document: default
+  word_document: default
+theme: "journal"
 ---
 
-```{r IMGLoop, echo=FALSE, out.width = "200px",fig.align="left", message=FALSE, warning=FALSE}
-    IMG=paste0("C:/Users/kerry/Desktop/kerry/Cursos_UCR_profe/Econometria_basica/Laboratorios_econometria_basica_UCR/imagen_UCR.png")
-    knitr::include_graphics(IMG)
-```
-
-```{r setup, include=FALSE}
+```{r setup, echo=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-setwd("C:/Users/kerry/Desktop/kerry/Cursos_UCR_profe/Econometria_basica/Laboratorios_econometria_basica_UCR/Tarea_1")
+library(ggplot2)
+
+library(stargazer)
+
+library(readxl)
+setwd("~/Tarea Econometria")
+
+cigs = read_excel("Data/CigarettesB.xlsx")
+
+energy = read_excel("Data/Electricity1970.xlsx")
+
+euroenergy = read_excel("Data/EuroEnergy.xlsx")
 ```
 
-# Instrucciones generales
+## Solución Tarea 1
 
-La tarea se realizará en grupos de 3 personas. En caso de que queden grupos de menos de 3 personas, queda a criterio de los estudiantes realizar la tarea en un grupo de 2 personas o unirse a otros grupos para ser 4 personas.
+En este presente documento se procede a realizar un analisis econometrico de diversas bases de datos de interes. Para ello se selecionaron las bases: 2.2 CigarettesB: Cigarette Consumption Data, de 2.6 Electricity1970: Cost Function of Electricity Producers 1970 & 2.7 EuroEnergy: European Energy Consumption Data. La estructura del documento es de un analisis individual en el orden mencionado previemente. Para así al final discutir en una última sección las conclusones de cada analisis.
 
-Para la tarea, se utilizarán los siguientes archivos:
+## Analisis Euroenergy
 
-```{r archivos1, include=TRUE, echo=FALSE}
+Para esta base de datos se tiene información relevante respecto al consumo de enerergia de 20 paises. Solamente se tienen dos variables numéricas dentro de la base de datos: - *energy*, el consumo agregado de energia en millones de kilogramos equivalentes de Carbon. -*GDP*, el PIB real de cada paiases de 1980 a precios de 1975.
 
-xfun::embed_file("Affairs.xlsx")
-xfun::embed_file("CigarettesB.xlsx")
-xfun::embed_file("CPS1988.xlsx")
-xfun::embed_file("CPSSWEducation.xlsx")
-xfun::embed_file("CreditCard.xlsx")
-xfun::embed_file("Electricity1970.xlsx")
-xfun::embed_file("EuroEnergy.xlsx")
-xfun::embed_file("Fatalities.xlsx")
-xfun::embed_file("GrowthDJ.xlsx")
-xfun::embed_file("HousePrices.xlsx")
-xfun::embed_file("Journals.xlsx")
-xfun::embed_file("MASchools.xlsx")
-xfun::embed_file("Mortgage.xlsx")
-xfun::embed_file("MurderRates.xlsx")
-xfun::embed_file("NMES1988.xlsx")
-xfun::embed_file("OECDGrowth.xlsx")
-xfun::embed_file("PhDPublications.xlsx")
-xfun::embed_file("RecreationDemand.xlsx")
+Para este caso, ambas variables tomarán el papel de variable dependiente.
+
+#### Resumen: Analisis Descriptivo
+
+
+```{r, echo=FALSE}
+table1 = summary(euroenergy)
+
+stargazer(as.data.frame(euroenergy[c("GDP","energy")]), 
+          type = "text", 
+          title = "Cuadro #: Resumen Euroenergy")
+```
+Realizando un gráfico de puntos con la variable "energy" como variable dependiente y la variable "GDP" como variable explicativa, puede verse una cierta correlación. Parece ser que, ante incrementos en el GDP, surgen también aumentos en el consumo de energía. En otras palabras, conforme se incrementa el producto, el consumo de energía tiende a la alza (parece que ambas se relacionan positivamente) Lo anterior se demuestra en el siguiente gráfico:
+
+```{r}
+
+euroenergy$GDP_1 = euroenergy$GDP/100000
+
+euroenergy$energy_1 = euroenergy$energy/100000
+
+ggplot( data = euroenergy, 
+        mapping = aes(
+          x = GDP_1,
+          y = energy_1
+      )) + geom_point(color = "red") +
+  labs( title = "Europa: Nivel del PIB Real y Conusmo de Energía",
+        subtitle = "En miles de millones de dolares y miles de millones de kg",
+        x = "PIB Real",
+        y = "Consumo de Energía"
+  )+theme_grey() + scale_radius(3)
 
 ```
 
-Cada grupo debe elegir tres archivos según su preferencia en los diversos temas que abarcan (múltiples ramas de la economía desde crecimiento, hasta salud y criminalidad). Un detalle de cada archivo se presenta a continuación. Se deja en el idioma original (inglés) para evitar errores de traducción.
+#### *3. 
+Definamos los siguientes casos:
 
-# Detalle de bases de datos
+*Caso a*: "energy" es la variable dependiente (es el caso a desarrollar)
 
-## Affairs: Fair's Extramarital Affairs Data
+Se utiliza el siguiente código.
 
-**Description**: Infidelity data, known as Fair's Affairs. Cross-section data from a survey conducted by Psychology Today in 1969.
+```{r, warning = FALSE}
+linear.1 <- lm(energy ~ GDP, data = euroenergy)
 
-**Format**:
-A data frame containing 601 observations on 9 variables.
+stargazer(linear.1, type = "text", title = "Resultados")
 
-**Variables**:
-affairs: numeric. How often engaged in extramarital sexual intercourse during the past year? 0 = none, 1 = once, 2 = twice, 3 = 3 times, 7 = 4–10 times, 12 = monthly, 12 = weekly, 12 = daily.
+coef = coefficients(linear.1)
 
-gender: factor indicating gender.
+```
+El resultado que se obtiene indica que, cuando el GDP es nulo, el consumo de energía es negativo. Por cada unidad adicional de GDP, el consumo de energía se incrementa en 0.78 (aproximadamente). Casi tiene una relación de uno a uno.
 
-age: numeric variable coding age in years: 17.5 = under 20, 22 = 20–24, 27 = 25–29, 32 = 30–34, 37 = 35–39, 42 = 40–44, 47 = 45–49, 52 = 50–54, 57 = 55 or over.
+*Caso b*: "GDP" es la variable dependiente (definido únicamente para este inciso a fin de determinar, por curiosidad, qué ocurre cuando el GDP es la variable dependiente).
 
-yearsmarried: numeric variable coding number of years married: 0.125 = 3 months or less, 0.417 = 4–6 months, 0.75 = 6 months–1 year, 1.5 = 1–2 years, 4 = 3–5 years, 7 = 6–8 years, 10 = 9–11 years, 15 = 12 or more years.
+```{r, warning = FALSE}
+linear.2 <- lm(GDP ~ energy, data = euroenergy)
 
-children: factor. Are there children in the marriage?
+stargazer(linear.2, type = "text", title = "Resultados")
 
-religiousness: numeric variable coding religiousness: 1 = anti, 2 = not at all, 3 = slightly, 4 = somewhat, 5 = very.
+coef = coefficients(linear.2)
 
-education: numeric variable coding level of education: 9 = grade school, 12 = high school graduate, 14 = some college, 16 = college graduate, 17 = some graduate work, 18 = master's degree, 20 = Ph.D., M.D., or other advanced degree.
+```
 
-occupation: numeric variable coding occupation according to Hollingshead classification (reverse numbering).
+Cuando el consumo de energía es nulo, el GDP es positivo. Por cada unidad adicional de energía, el GDP se incrementa en 1.23 aproximadamente.
 
-rating: numeric variable coding self rating of marriage: 1 = very unhappy, 2 = somewhat unhappy, 3 = average, 4 = happier than average, 5 = very happy.
+#### *4. Realice las pruebas t para los coeficientes anteriores e interprete su resultado.*
 
-**Source**: Online complements to Greene (2003). Table F22.2.
+*Prueba t para los coeficientes:*
 
-**References**
-Greene, W.H. (2003). Econometric Analysis, 5th edition. Upper Saddle River, NJ: Prentice Hall.
+Haciendo uso de la función "summary()" se obtiene toda la información referente a las pruebas t y pruebas f. Para el caso a, se tiene que:
 
-Fair, R.C. (1978). A Theory of Extramarital Affairs. Journal of Political Economy, 86, 45–61.
+    summary(regresion)
 
-## CigarettesB: Cigarette Consumption Data
+Para el caso del intercepto, la probabilidad de que se cumpla la hipótesis nula, es decir, que éste sea cero, es de 0.626, mientras que, para el caso del coeficiente de la única variable explicativa, es muy muy baja. Es decir, que la probabilidad de que éste sea cero es aproximadamente cero para esos niveles de significancia.
 
-**Description**: Cross-section data on cigarette consumption for 46 US States, for the year 1992.
+#### *5. Realice la prueba F de significancia conjunta del modelo (o modelos) de regresión anterior e interprete su resultado.*
 
-**Format**: A data frame containing 46 observations on 3 variables.
+*Prueba F:* Se sigue con el uso de la función "summary(regresion)". Se sabe que la hipótesis nula de la prueba F consiste en que todos los coeficientes de la regresión sean iguales a cero. En el caso de la prueba anterior, se buscaba probar la misma hipótesis pero para cada uno de los coeficientes por aparte, acá se busca probar conjuntamente que éstos sean cero.
 
-**Variables**:
+Los resultados de la prueba, arrojan que, el F calculado de esta prueba es de 386.3 y tiene 1 y 18 grados de libertad. Se observa también que el P-value es muy próximo a cero, por lo tanto, no se acepta la hipótesis de que todos los coeficientes (conjuntamente) son cero.
 
-packs: Logarithm of cigarette consumption (in packs) per person of smoking age (> 16 years).
+#### *6. Cuando los datos lo permitan, defina un modelo de regresión lineal como base y realice la prueba F de modelo restringido versus modelo sin restringir e interprete cuál es más adecuado.*
 
-price: Logarithm of real price of cigarette in each state.
+Los datos no son suficientes como para elaborar modelos restringidos, puesto que, solamente se tienen dos variables.
 
-income: Logarithm of real disposable income (per capita) in each state.
-
-**Source**: The data are from Baltagi (2002).
-
-**References**
-Baltagi, B.H. (2002). Econometrics, 3rd ed. Berlin, Springer.
-
-Baltagi, B.H. and Levin, D. (1992). Cigarette Taxation: Raising Revenues and Reducing Consumption. Structural Change and Economic Dynamics, 3, 321–335.
-
-## CPS1988: Determinants of Wages Data (CPS 1988)
-
-**Description**: Cross-section data originating from the March 1988 Current Population Survey by the US Census Bureau.
-
-**Format**: A data frame containing 28,155 observations on 7 variables.
-
-
-**Variables**:
-
-wage: Wage (in dollars per week).
-
-education: Number of years of education.
-
-experience: Number of years of potential work experience.
-
-ethnicity: Factor with levels "cauc" and "afam" (African-American).
-
-smsa: Factor. Does the individual reside in a Standard Metropolitan Statistical Area (SMSA)?
-
-region: Factor with levels "northeast", "midwest", "south", "west".
-
-parttime: Factor. Does the individual work part-time?
-
-**Details**: A sample of men aged 18 to 70 with positive annual income greater than USD 50 in 1992, who are not self-employed nor working without pay. Wages are deflated by the deflator of Personal Consumption Expenditure for 1992.
-
-A problem with CPS data is that it does not provide actual work experience. It is therefore customary to compute experience as age - education - 6 (as was done by Bierens and Ginther, 2001), this may be considered potential experience. As a result, some respondents have negative experience.
-
-**Source**: http://www.personal.psu.edu/hxb11/MEDIAN.HTM
-
-**References**
-Bierens, H.J., and Ginther, D. (2001). Integrated Conditional Moment Testing of Quantile Regression Models. Empirical Economics, 26, 307–324.
-
-Buchinsky, M. (1998). Recent Advances in Quantile Regression Models: A Practical Guide for Empirical Research. Journal of Human Resources, 33, 88–126.
-
-## CPSSW (CPSSWEducation): Stock and Watson CPS Data Sets
-
-**Description**: Stock and Watson (2007) provide several subsets created from March Current Population Surveys (CPS) with data on the relationship of earnings and education over several year.
-
-**Format**
-CPSSWEducation: A data frame containing 2,950 observations on 4 variables.
-
-**Variables**:
-
-earnings: average hourly earnings (sum of annual pretax wages, salaries, tips, and bonuses, divided by the number of hours worked annually).
-
-education: number of years of education.
-
-gender: factor indicating gender.
-
-age: age in years.
-
-**Details**:
-Each month the Bureau of Labor Statistics in the US Department of Labor conducts the Current Population Survey (CPS), which provides data on labor force characteristics of the population, including the level of employment, unemployment, and earnings. Approximately 65,000 randomly selected US households are surveyed each month. The sample is chosen by randomly selecting addresses from a database. Details can be found in the Handbook of Labor Statistics and is described on the Bureau of Labor Statistics website (http://www.bls.gov/).
-
-The survey conducted each March is more detailed than in other months and asks questions about earnings during the previous year. The data sets contain data for 2004 (from the March 2005 survey), and some also for earlier years (up to 1992).
-
-If education is given, it is for full-time workers, defined as workers employed more than 35 hours per week for at least 48 weeks in the previous year. Data are provided for workers whose highest educational achievement is a high school diploma and a bachelor's degree.
-
-Earnings for years earlier than 2004 were adjusted for inflation by putting them in 2004 USD using the Consumer Price Index (CPI). From 1992 to 2004, the price of the CPI market basket rose by 34.6%. To make earnings in 1992 and 2004 comparable, 1992 earnings are inflated by the amount of overall CPI price inflation, by multiplying 1992 earnings by 1.346 to put them into 2004 dollars.
-
-CPSSW9204 provides the distribution of earnings in the US in 1992 and 2004 for college-educated full-time workers aged 25–34. CPSSW04 is a subset of CPSSW9204 and provides the distribution of earnings in the US in 2004 for college-educated full-time workers aged 25–34. _CPSSWEducation_ is similar (but not a true subset) and contains the distribution of earnings in the US in 2004 for college-educated full-time workers aged 29–30. CPSSW8 contains a larger sample with workers aged 21–64, additionally providing information about the region of residence. CPSSW9298 is similar to CPSSW9204 providing data from 1992 and 1998 (with the 1992 subsets not being exactly identical). CPSSW3 provides trends (from 1992 to 2004) in hourly earnings in the US of working college graduates aged 25–34 (in 2004 USD).
-
-**Source**: Online complements to Stock and Watson (2007).
-
-**References**
-Stock, J.H. and Watson, M.W. (2007). Introduction to Econometrics, 2nd ed. Boston: Addison Wesley.
-
-## CreditCard: Expenditure and Default Data
-
-**Description**: Cross-section data on the credit history for a sample of applicants for a type of credit card.
-
-**Format**: A data frame containing 1,319 observations on 12 variables.
-
-**Variables**:
-
-card: Factor. Was the application for a credit card accepted?
-
-reports: Number of major derogatory reports.
-
-age: Age in years plus twelfths of a year.
-
-income: Yearly income (in USD 10,000).
-
-share: Ratio of monthly credit card expenditure to yearly income.
-
-expenditure: Average monthly credit card expenditure.
-
-owner: Factor. Does the individual own their home?
-
-selfemp: Factor. Is the individual self-employed?
-
-dependents: Number of dependents.
-
-months: Months living at current address.
-
-majorcards: Number of major credit cards held.
-
-active: Number of active credit accounts.
-
-**Details**: Greene (2003) provides this data set twice in Table F21.4 and F9.1, respectively. Table F9.1 has just the observations, rounded to two digits. Here, we give the F21.4 version, see the examples for the F9.1 version. Note that age has some suspiciously low values (below one year) for some applicants. One of these differs between the F9.1 and F21.4 version.
-
-**Source**: Online complements to Greene (2003). Table F21.4.
-
-**References**
-Greene, W.H. (2003). Econometric Analysis, 5th edition. Upper Saddle River, NJ: Prentice Hall.
-
-## Electricity1970: Cost Function of Electricity Producers 1970
-
-**Description**: Cross-section data, at the firm level, on electric power generation.
-
-**Format**: A data frame containing 158 cross-section observations on 9 variables.
-
-**Variables**: 
-
-cost: total cost.
-
-output: total output.
-
-labor: wage rate.
-
-laborshare: cost share for labor.
-
-capital: capital price index.
-
-capitalshare: cost share for capital.
-
-fuel: fuel price.
-
-fuelshare: cost share for fuel.
-
-**Details**: The data are from Christensen and Greene (1976) and pertain to the year 1970. However, the file contains some extra observations, the holding companies. Only the first 123 observations are needed to replicate Christensen and Greene (1976).
-
-**Source**: Online complements to Greene (2003), Table F5.2.
-
-**References**
-Christensen, L. and Greene, W.H. (1976). Economies of Scale in U.S. Electric Power Generation. Journal of Political Economy, 84, 655–676.
-
-Greene, W.H. (2003). Econometric Analysis, 5th edition. Upper Saddle River, NJ: Prentice Hall.
-
-## EuroEnergy: European Energy Consumption Data
-
-**Description**: Cross-section data on energy consumption for 20 European countries, for the year 1980.
-
-**Format**: A data frame containing 20 observations on 2 variables.
-
-**Variables**: 
-
-gdp: Real gross domestic product for the year 1980 (in million 1975 US dollars).
-
-energy: Aggregate energy consumption (in million kilograms coal equivalence).
-
-**Source**: The data are from Baltagi (2002).
-
-**References**
-Baltagi, B.H. (2002). Econometrics, 3rd ed. Berlin, Springer.
-
-## Fatalities: US Traffic Fatalities
-
-**Description**: US traffic fatalities panel data for the “lower 48” US states (i.e., excluding Alaska and Hawaii), annually for 1982 through 1988.
-
-**Format**: A data frame containing 336 observations on 34 variables.
-
-**Variables**
-
-state: factor indicating state.
-
-year: factor indicating year.
-
-spirits: numeric. Spirits consumption.
-
-unemp: numeric. Unemployment rate.
-
-income: numeric. Per capita personal income in 1987 dollars.
-
-emppop: numeric. Employment/population ratio.
-
-beertax: numeric. Tax on case of beer.
-
-baptist: numeric. Percent of southern baptist.
-
-mormon: numeric. Percent of mormon.
-
-drinkage: numeric. Minimum legal drinking age.
-
-dry: numeric. Percent residing in “dry” countries.
-
-youngdrivers: numeric. Percent of drivers aged 15–24.
-
-miles: numeric. Average miles per driver.
-
-breath: factor. Preliminary breath test law?
-
-jail: factor. Mandatory jail sentence?
-
-service: factor. Mandatory community service?
-
-fatal: numeric. Number of vehicle fatalities.
-
-nfatal: numeric. Number of night-time vehicle fatalities.
-
-sfatal: numeric. Number of single vehicle fatalities.
-
-fatal1517: numeric. Number of vehicle fatalities, 15–17 year olds.
-
-nfatal1517: numeric. Number of night-time vehicle fatalities, 15–17 year olds.
-
-fatal1820: numeric. Number of vehicle fatalities, 18–20 year olds.
-
-nfatal1820: numeric. Number of night-time vehicle fatalities, 18–20 year olds.
-
-fatal2124: numeric. Number of vehicle fatalities, 21–24 year olds.
-
-nfatal2124: numeric. Number of night-time vehicle fatalities, 21–24 year olds.
-
-afatal: numeric. Number of alcohol-involved vehicle fatalities.
-
-pop: numeric. Population.
-
-pop1517: numeric. Population, 15–17 year olds.
-
-pop1820: numeric. Population, 18–20 year olds.
-
-pop2124: numeric. Population, 21–24 year olds.
-
-milestot: numeric. Total vehicle miles (millions).
-
-unempus: numeric. US unemployment rate.
-
-emppopus: numeric. US employment/population ratio.
-
-gsp: numeric. GSP rate of change.
-
-**Details**: Traffic fatalities are from the US Department of Transportation Fatal Accident Reporting System. The beer tax is the tax on a case of beer, which is an available measure of state alcohol taxes more generally. The drinking age variable is a factor indicating whether the legal drinking age is 18, 19, or 20. The two binary punishment variables describe the state's minimum sentencing requirements for an initial drunk driving conviction.
-
-Total vehicle miles traveled annually by state was obtained from the Department of Transportation. Personal income was obtained from the US Bureau of Economic Analysis, and the unemployment rate was obtained from the US Bureau of Labor Statistics.
-
-**Source**: Online complements to Stock and Watson (2007).
-
-**References**
-Ruhm, C. J. (1996). Alcohol Policies and Highway Vehicle Fatalities. Journal of Health Economics, 15, 435–454.
-
-Stock, J. H. and Watson, M. W. (2007). Introduction to Econometrics, 2nd ed. Boston: Addison Wesley.
-
-## GrowthDJ: Determinants of Economic Growth
-
-**Description**: Growth regression data as provided by Durlauf & Johnson (1995).
-
-**Format**: A data frame containing 121 observations on 10 variables.
-
-**Varaibles**:
-
-oil: factor. Is the country an oil-producing country?
-
-inter: factor. Does the country have better quality data?
-
-oecd: factor. Is the country a member of the OECD?
-
-gdp60: Per capita GDP in 1960.
-
-gdp85: Per capita GDP in 1985.
-
-gdpgrowth: Average growth rate of per capita GDP from 1960 to 1985 (in percent).
-
-popgrowth: Average growth rate of working-age population 1960 to 1985 (in percent).
-
-invest: Average ratio of investment (including Government Investment) to GDP from 1960 to 1985 (in percent).
-
-school: Average fraction of working-age population enrolled in secondary school from 1960 to 1985 (in percent).
-
-literacy60: Fraction of the population over 15 years old that is able to read and write in 1960 (in percent).
-
-**Details**: The data are derived from the Penn World Table 4.0 and are given in Mankiw, Romer and Weil (1992), except literacy60 that is from the World Bank's World Development Report.
-
-**Source**: Journal of Applied Econometrics Data Archive.
-
-**References**
-Durlauf, S.N., and Johnson, P.A. (1995). Multiple Regimes and Cross-Country Growth Behavior. Journal of Applied Econometrics, 10, 365–384.
-
-Koenker, R., and Zeileis, A. (2009). On Reproducible Econometric Research. Journal of Applied Econometrics, 24(5), 833–847.
-
-Mankiw, N.G, Romer, D., and Weil, D.N. (1992). A Contribution to the Empirics of Economic Growth. Quarterly Journal of Economics, 107, 407–437.
-
-Masanjala, W.H., and Papageorgiou, C. (2004). The Solow Model with CES Technology: Nonlinearities and Parameter Heterogeneity. Journal of Applied Econometrics, 19, 171–201.
-
-## HousePrices: House Prices in the City of Windsor, Canada
-
-**Description**: Sales prices of houses sold in the city of Windsor, Canada, during July, August and September, 1987.
-
-**Format**: A data frame containing 546 observations on 12 variables.
-
-**Variables**:
-
-price: Sale price of a house.
-
-lotsize: Lot size of a property in square feet.
-
-bedrooms: Number of bedrooms.
-
-bathrooms: Number of full bathrooms.
-
-stories: Number of stories excluding basement.
-
-driveway: Factor. Does the house have a driveway?
-
-recreation: Factor. Does the house have a recreational room?
-
-fullbase: Factor. Does the house have a full finished basement?
-
-gasheat: Factor. Does the house use gas for hot water heating?
-
-aircon: Factor. Is there central air conditioning?
-
-garage: Number of garage places.
-
-prefer: Factor. Is the house located in the preferred neighborhood of the city?
-
-**Source**: Journal of Applied Econometrics Data Archive.
-
-**References**
-Anglin, P., and Gencay, R. (1996). Semiparametric Estimation of a Hedonic Price Function. Journal of Applied Econometrics, 11, 633–648.
-
-Verbeek, M. (2004). A Guide to Modern Econometrics, 2nd ed. Chichester, UK: John Wiley.
-
-## Journals: Economics Journal Subscription Data
-
-**Description**: Subscriptions to economics journals at US libraries, for the year 2000.
-
-**Format**: A data frame containing 180 observations on 10 variables.
-
-**Variables**:
-
-title: Journal title.
-
-publisher: factor with publisher name.
-
-society: factor. Is the journal published by a scholarly society?
-
-price: Library subscription price.
-
-pages: Number of pages.
-
-charpp: Characters per page.
-
-citations: Total number of citations.
-
-foundingyear: Year journal was founded.
-
-subs: Number of library subscriptions.
-
-field: factor with field description.
-
-**Details**: Data on 180 economic journals, collected in particular for analyzing journal pricing. See also http://www.econ.ucsb.edu/~tedb/Journals/jpricing.html for general information on this topic as well as a more up-to-date version of the data set. This version is taken from Stock and Watson (2007).
-
-The data as obtained from the online complements for Stock and Watson (2007) contained two journals with title “World Development”. One of these (observation 80) seemed to be an error and was changed to “The World Economy”.
-
-**Source**: Online complements to Stock and Watson (2007).
-
-**References**
-Bergstrom, T. (2001). Free Labor for Costly Journals? Journal of Economic Perspectives, 15, 183–198.
-
-Stock, J.H. and Watson, M.W. (2007). Introduction to Econometrics, 2nd ed. Boston: Addison Wesley.
-
-## MASchools: Massachusetts Test Score Data
-
-**Description**: The dataset contains data on test performance, school characteristics and student demographic backgrounds for school districts in Massachusetts.
-
-**Format**: A data frame containing 220 observations on 16 variables.
-
-**Variables**:
-
-district: character. District code.
-
-municipality: character. Municipality name.
-
-expreg: Expenditures per pupil, regular.
-
-expspecial: Expenditures per pupil, special needs.
-
-expbil: Expenditures per pupil, bilingual.
-
-expocc: Expenditures per pupil, occupational.
-
-exptot: Expenditures per pupil, total.
-
-scratio: Students per computer.
-
-special: Special education students (per cent).
-
-lunch: Percent qualifying for reduced-price lunch.
-
-stratio: Student-teacher ratio.
-
-income: Per capita income.
-
-score4: 4th grade score (math + English + science).
-
-score8: 8th grade score (math + English + science).
-
-salary: Average teacher salary.
-
-english: Percent of English learners.
-
-**Details**: The Massachusetts data are district-wide averages for public elementary school districts in 1998. The test score is taken from the Massachusetts Comprehensive Assessment System (MCAS) test, administered to all fourth graders in Massachusetts public schools in the spring of 1998. The test is sponsored by the Massachusetts Department of Education and is mandatory for all public schools. The data analyzed here are the overall total score, which is the sum of the scores on the English, Math, and Science portions of the test. Data on the student-teacher ratio, the percent of students receiving a subsidized lunch and on the percent of students still learning english are averages for each elementary school district for the 1997–1998 school year and were obtained from the Massachusetts department of education. Data on average district income are from the 1990 US Census.
-
-**Source**: Online complements to Stock and Watson (2007).
-
-**References**
-Stock, J. H. and Watson, M. W. (2007). Introduction to Econometrics, 2nd ed. Boston: Addison Wesley.
-
-## Mortgage: Fixed versus Adjustable Mortgages
-
-**Description**: Cross-section data about fixed versus adjustable mortgages for 78 households.
-
-**Format**: A data frame containing 78 observations on 16 variables.
-
-**Variables**:
-
-rate: Factor with levels "fixed" and "adjustable".
-
-age: Age of the borrower.
-
-school: Years of schooling for the borrower.
-
-networth: Net worth of the borrower.
-
-interest: Fixed interest rate.
-
-points: Ratio of points paid on adjustable to fixed rate mortgages.
-
-maturities: Ratio of maturities on adjustable to fixed rate mortgages.
-
-years: Years at the present address.
-
-married: Factor. Is the borrower married?
-
-first: Factor. Is the borrower a first-time home buyer?
-
-selfemp: Factor. Is the borrower self-employed?
-
-tdiff: The difference between the 10-year treasury rate less the 1-year treasury rate.
-
-margin: The margin on the adjustable rate mortgage.
-
-coborrower: Factor. Is there a co-borrower?
-
-liability: Short-term liabilities.
-
-liquid: Liquid assets.
-
-**Source**. The data is from Baltagi (2002).
-
-**References**
-Baltagi, B.H. (2002). Econometrics, 3rd ed. Berlin, Springer.
-
-Dhillon, U.S., Shilling, J.D. and Sirmans, C.F. (1987). Choosing Between Fixed and Adjustable Rate Mortgages. Journal of Money, Credit and Banking, 19, 260–267.
-
-## MurderRates: Determinants of Murder Rates in the United States
-
-**Description**: Cross-section data on states in 1950.
-
-**Format**: A data frame containing 44 observations on 8 variables.
-
-**Variables**:
-
-rate: Murder rate per 100,000 (FBI estimate, 1950).
-
-convictions: Number of convictions divided by number of murders in 1950.
-
-executions: Average number of executions during 1946–1950 divided by convictions in 1950.
-
-time: Median time served (in months) of convicted murderers released in 1951.
-
-income: Median family income in 1949 (in 1,000 USD).
-
-lfp: Labor force participation rate in 1950 (in percent).
-
-noncauc: Proportion of population that is non-Caucasian in 1950.
-
-southern: Factor indicating region.
-
-**Source**: Maddala (2001), Table 8.4, p. 330
-
-**References**
-Maddala, G.S. (2001). Introduction to Econometrics, 3rd ed. New York: John Wiley.
-
-McManus, W.S. (1985). Estimates of the Deterrent Effect of Capital Punishment: The Importance of the Researcher's Prior Beliefs. Journal of Political Economy, 93, 417–425.
-
-Stokes, H. (2004). On the Advantage of Using Two or More Econometric Software Systems to Solve the Same Problem. Journal of Economic and Social Measurement, 29, 307–320.
-
-## NMES1988: Demand for Medical Care in NMES 1988
-
-**Description**: Cross-section data originating from the US National Medical Expenditure Survey (NMES) conducted in 1987 and 1988. The NMES is based upon a representative, national probability sample of the civilian non-institutionalized population and individuals admitted to long-term care facilities during 1987. The data are a subsample of individuals ages 66 and over all of whom are covered by Medicare (a public insurance program providing substantial protection against health-care costs).
-
-**Format**: A data frame containing 4,406 observations on 19 variables.
-
-**Variables**:
-
-visits: Number of physician office visits.
-
-nvisits: Number of non-physician office visits.
-
-ovisits: Number of physician hospital outpatient visits.
-
-novisits: Number of non-physician hospital outpatient visits.
-
-emergency: Emergency room visits.
-
-hospital: Number of hospital stays.
-
-health: Factor indicating self-perceived health status, levels are "poor", "average" (reference category), "excellent".
-
-chronic: Number of chronic conditions.
-
-adl: Factor indicating whether the individual has a condition that limits activities of daily living ("limited") or not ("normal").
-
-region: Factor indicating region, levels are northeast, midwest, west, other (reference category).
-
-age: Age in years (divided by 10).
-
-afam: Factor. Is the individual African-American?
-
-gender: Factor indicating gender.
-
-married: Factor. is the individual married?
-
-school: Number of years of education.
-
-income: Family income in USD 10,000.
-
-employed: Factor. Is the individual employed?
-
-insurance: Factor. Is the individual covered by private insurance?
-
-medicaid: Factor. Is the individual covered by Medicaid?
-
-**Source**: Journal of Applied Econometrics Data Archive for Deb and Trivedi (1997).
-
-**References**
-Cameron, A.C. and Trivedi, P.K. (1998). Regression Analysis of Count Data. Cambridge: Cambridge University Press.
-
-Deb, P., and Trivedi, P.K. (1997). Demand for Medical Care by the Elderly: A Finite Mixture Approach. Journal of Applied Econometrics, 12, 313–336.
-
-Zeileis, A., Kleiber, C., and Jackman, S. (2008). Regression Models for Count Data in R. Journal of Statistical Software, 27(8). URL http://www.jstatsoft.org/v27/i08/.
-
-## OECDGrowth: OECD Macroeconomic Data
-
-**Description**: Cross-section data on OECD countries, used for growth regressions.
-
-**Format**: A data frame with 22 observations on the following 6 variables.
-
-**Variables**:
-
-gdp85: real GDP in 1985 (per person of working age, i.e., age 15 to 65), in 1985 international prices.
-
-gdp60: real GDP in 1960 (per person of working age, i.e., age 15 to 65), in 1985 international prices.
-
-invest: average of annual ratios of real domestic investment to real GDP (1960–1985).
-
-school: percentage of the working-age population that is in secondary school.
-
-randd: average of annual ratios of gross domestic expenditure on research and development to nominal GDP (of available observations during 1960–1985).
-
-popgrowth: annual population growth 1960–1985, computed as log(pop85/pop60)/25.
-
-**Source**: Appendix 1 Nonneman and Vanhoudt (1996), except for one bad misprint: The value of school for Norway is given as 0.01, the correct value is 0.1 (see Mankiw, Romer and Weil, 1992). OECDGrowth contains the corrected data.
-
-**References**
-Mankiw, N.G., Romer, D., and Weil, D.N. (1992). A Contribution to the Empirics of Economic Growth. Quarterly Journal of Economics, 107, 407–437.
-
-Nonneman, W., and Vanhoudt, P. (1996). A Further Augmentation of the Solow Model and the Empirics of Economic Growth. Quarterly Journal of Economics, 111, 943–953.
-
-Zaman, A., Rousseeuw, P.J., and Orhan, M. (2001). Econometric Applications of High-Breakdown Robust Regression Techniques. Economics Letters, 71, 1–8.
-
-## PhDPublications: Doctoral Publications
-
-**Description**: Cross-section data on the scientific productivity of PhD students in biochemistry.
-
-**Format**: A data frame containing 915 observations on 6 variables.
-
-**Variables**:
-
-articles: Number of articles published during last 3 years of PhD.
-
-gender: factor indicating gender.
-
-married: factor. Is the PhD student married?
-
-kids: Number of children less than 6 years old.
-
-prestige: Prestige of the graduate program.
-
-mentor: Number of articles published by student's mentor.
-
-**Source**: Online complements to Long (1997).
-
-**References**
-Long, J.S. (1990). Regression Models for Categorical and Limited Dependent Variables. Thousand Oaks: Sage Publications.
-
-Long, J.S. (1997). The Origin of Sex Differences in Science. Social Forces, 68, 1297–1315.
-
-## RecreationDemand: Recreation Demand Data
-
-**Description**: Cross-section data on the number of recreational boating trips to Lake Somerville, Texas, in 1980, based on a survey administered to 2,000 registered leisure boat owners in 23 counties in eastern Texas.
-
-**Format**: A data frame containing 659 observations on 8 variables.
-
-**Variables**:
-
-trips: Number of recreational boating trips.
-
-quality: Facility's subjective quality ranking on a scale of 1 to 5.
-
-ski: factor. Was the individual engaged in water-skiing at the lake?
-
-income: Annual household income of the respondent (in 1,000 USD).
-
-userfee: factor. Did the individual pay an annual user fee at Lake Somerville?
-
-costC: Expenditure when visiting Lake Conroe (in USD).
-
-costS: Expenditure when visiting Lake Somerville (in USD).
-
-costH: Expenditure when visiting Lake Houston (in USD).
-
-**Details**: According to the original source (Seller, Stoll and Chavas, 1985, p. 168), the quality rating is on a scale from 1 to 5 and gives 0 for those who had not visited the lake. This explains the remarkably low mean for this variable, but also suggests that its treatment in various more recent publications is far from ideal. For consistency with other sources we handle the variable as a numerical variable, including the zeros.
-
-**Source**: Journal of Business \& Economic Statistics Data Archive.
-
-**References** 
-Cameron, A.C. and Trivedi, P.K. (1998). Regression Analysis of Count Data. Cambridge: Cambridge University Press.
-
-Gurmu, S. and Trivedi, P.K. (1996). Excess Zeros in Count Models for Recreational Trips. Journal of Business \& Economic Statistics, 14, 469–477.
-
-Ozuna, T. and Gomez, I.A. (1995). Specification and Testing of Count Data Recreation Demand Functions. Empirical Economics, 20, 543–550.
-
-Seller, C., Stoll, J.R. and Chavas, J.-P. (1985). Validation of Empirical Measures of Welfare Change: A Comparison of Nonmarket Techniques. Land Economics, 61, 156–175.
-
-# Ejercicios a realizar
-
-1. Para cada conjunto de datos particular, defina una variable de interés como variable a explicar (dependiente). 
-
-2. Realice un análisis descriptivo (correlaciones y gráficos) entre las variables de los datos. 
-
-3. Defina variables explicativas y realice una regresión lineal (o varias a criterio de los estudiantes y si los datos lo permiten). Haga una interpretación sencilla de sus resultados (no se evaluará la interpretación exacta de los coeficientes en la tarea 1, solo en la tarea 2, ya que hasta los Laboratorios 6 y 7 se cubrirá la interpretación con rigurosidad).
-
-4. Realice las pruebas t para los coeficientes anteriores e interprete su resultado.
-
-5. Realice la prueba F de significancia conjunta del modelo (o modelos) de regresión anterior e interprete su resultado. 
-
-6. Cuando los datos lo permitan, defina un modelo de regresión lineal como base y realice la prueba F de modelo restringido versus modelo sin restringir e interprete cuál es más adecuado.
-
-# Fecha y formato de entrega
-
-La fecha de entrega es antes del **12 de Octubre de 2021**. El formato es un documento auto-reproducible generado desde R (Rmarkdown). Puede ser tipo PDF o HTML según su preferencia. En el título indique "Solución tarea 1" y en el autor el nombre de los integrantes del grupo.
-
-El documento debe incluir el código utilizado, gráficos, texto con las diversas respuestas y tablas de regresiones, preferiblemente con el formato del paquete `stargazer` (type = "html" si es HTML, type = "latex" si es PDF, o type = "text" que siempre funciona en ambos tipos de documento, pero se ve peor). También debe entregar el código de Rmarkdown (archivo con extensión .Rmd) utilizado para generar el documento.
-
+## Conclusión

@@ -35,24 +35,22 @@ En este presente documento se procede a realizar un analisis econometrico de div
 
 -   2.7 EuroEnergy: European Energy Consumption Data.
 
-La estructura del documento es de un analisis individual en el orden mencionado previemente. Para así al final discutir en una última sección las conclusones de cada analisis.
+La estructura del documento es de un analisis individual en el orden mencionado previamente. Para así al final discutir en una última sección las conclusiones de cada analisis.
 
 ## 1. Analisis Cigarettes Data
 
-Para la base de datos 2.2 tomaremos la variable `PACKS` como la variable dependiente que será analizada. Esta variable representa el numero de paquetes consumidos por personas mayores de 16 años.
+Para la base de datos 2.2 tomaremos la variable `PACKS` como nuestra variable dependiente que será analizada. Esta variable representa el numero de paquetes consumidos por personas mayores de 16 años en casa Estado; asi nuestro modelo propuesto para el primer analsis sería de la forma:
+
+$$
+ln(PACKS) = \beta_{0}+\beta_{1}ln(price)+\beta_{2}ln(income)+\mu
+$$
 
 ### 1.1 Resumen Información
 
-```{r, echo=FALSE}
 
-stargazer(as.data.frame(cigs[c("PACKS","price","income")]), 
-          type = "text", 
-          title = "Cuadro #: Resumen Cigarrattes")
-```
+Realizamos un analisis grafico para nuestras 3 variables: ``PACKS``, ``income`` y ``price``; se puede apreciar en el siguiente gráfico que existe cierto nivel de correlación negativa entre el consumo y el precio. 
 
-Realizando un analisis grafico de nuestras 3 variables: "PACKS", "income" y "price" se puede ver que existe cierto nivel de correlación negativa entre el consumo y el precio. Asi mismo, se puede observar una leve correlacion positiva entre el ingreso disponible per capita y el precio de los cigarillos en el estado.
-
-```{r}
+```{r, echo = FALSE}
 ggplot( data = cigs, 
         mapping = aes(
           x = price,
@@ -66,7 +64,9 @@ ggplot( data = cigs,
 
 ```
 
-```{r}
+Por otra parte, note que si realizamos un grafico similar al previo donde comparamos el ingreso medio por estado con el consumo medio por persona en cada estado, se infiere que no existe una correlación entre ambas variables. 
+
+```{r, echo=FALSE}
 ggplot( data = cigs, 
         mapping = aes(
           x = income,
@@ -79,15 +79,12 @@ ggplot( data = cigs,
   )+theme_grey() + scale_radius(3)
 ```
 
-Haciendo un analisis de correlacion entre la variable PACKS y cada una de sus variables explicativas nos da un resultado de:
+Haciendo un analisis de correlacion promieamente entre la variable ``PACKS`` y cada una de sus variables explicativas nos da un resultado similar a la intuición grafica. El resultado matematico indica que existe una correlación negativa debil entre ingreso y la cantidad de cigarros consumidos.
 
-```{r}
+```{r, echo=FALSE}
 cor(cigs)
 ```
 
-Es decir que existe un nivel medio de correlacion negativa entre la cantidad de paquetes de cigarillos consumidos y su precio y una correlacion sumamente debil entre el ingreso per capita y su consumo.
-
-Con el fin de analizar la regresión lineal de nuestras variables, utilizaremos el siguiente codigo:
 
 ### 1.2 Regresión Lineal
 
@@ -95,27 +92,29 @@ Con el fin de analizar la regresión lineal de nuestras variables, utilizaremos 
 
 ```{r, warning = FALSE}
 linear.cigs <-lm(PACKS ~ price+income, data=cigs)
+```
 
-stargazer(linear.cigs, type = "text", title = "Cuadro #: Resultados Regresión")
+El cual nos muestra que en promedio se consumiria $4.3$ paquetes de cigarillos si el precio y los ingresos fueran $0$. En este otro caso note que dada la definición del modelo $\beta_{1}$ es un indicador de Elasticidad precio de la demanda de cigarrillos. Considere que al ser mayor a uno no sigue la intuición econimica incial que los cigarrillos son ineslasticos. 
+
+```{r, echo=FALSE, warning=FALSE}
+stargazer(linear.cigs, type = "text", title = "Cuadro #1: Resultados Regresión")
 coef = coefficients(linear.cigs)
 ```
 
-El cual nos muestra que en promedio se consumiria 4.3 paquetes de cigarillos si el precio y los ingresos fueran 0 y por cada unidad porcentual de cambio en el precio de los cigarillos en cada ciudad, se asocia a un cambio negativo de 133% en el promedio de la cantidad de cigarillos consumidos mientras que por cada unidad porcentual de cambio en ingreso disponible per capita se asocia a un cambio de 17.2% en el consumo de cigarillos.
-
 ### 1.3 Pruebas t
-utilizando la misma función que en la pregunta anterior, se obtiene la información necesaria para obtener los resultados de la prueba t.
+Utilizando la misma función que en la pregunta anterior, y el cuadro 1 se obtiene la información necesaria para obtener los resultados de la prueba $t$.
 
-Tomando H0: B1=0 (Precio no tiene efecto en consumo) La prueba t realizada para el precio nos devuelve un P-value de 0.000168, es decir un 0.168%, con estos datos podemos rechazar la hipotesis y decir que estadisticamente el precio de los cigarillos tiene un efecto sobre su consumo.
+Tomando $H_{0}: B_{1}=0$ (Precio no tiene efecto en consumo) La prueba $t$ realizada para el precio nos devuelve un P-value de 0.000168, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el precio del paquete no afecta el consumo. 
 
-Tomando H0: B2=0 (Ingreso no tiene efecto en consumo) La prueba t realizada para el ingreso nos devuelve un P-Value de 0.386 el cual, en una prueba con un 95% de significancia significaria que la probabilidad de cometer un error tipo 1 es significativamente mayor al 5% y por ello se puede rechazar la hipotesis nula.
+Tomando $H_{0}: B_{2}=0$  (Ingreso no tiene efecto en consumo) La prueba t realizada para el ingreso nos devuelve un P-Value de 0.386 el cual, entonces con un nivel de significancia del 5% podemos no podemos rechazar la hipotesis nula donde el precio del paquete no afecta el consumo. 
 
 ### 1.4 Pruebas F
 
-Tomando un H0: B1=B2=0 y al utilizar el codigo de:
+Tomando una prueba de significancia conjunta tal que nuestra hipotesis nula sea; $H_{0}: B_{1}=B_{2}=0$. 
 
-Nos da un P-value de prueba F de 0.0004, tomando un α=0.05, llegamos al resultado que se rechaza la hipotesis nula, es decir que las variables "income" y "price" sirven para explicar la variable dependiente de "PACKS", es decir que el precio de los cigarillos y el ingreso per capita de las personas tinen un efecto sobre el consumo promedio de paquetes de cigarillos. \#\# Analisis Energy
+Al correr el calculo del estadistico F, nos da un P-value de 0.0004. Entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula y concluimo que el precio de los cigarillos y el ingreso per capita de las personas pueden explicar el consumo promedio de paquetes de cigarillos. 
 
-### Resumen
+## 2. Analisis Energy
 
 ```{r}
 

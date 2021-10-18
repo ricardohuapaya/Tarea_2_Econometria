@@ -1,6 +1,6 @@
 ---
 title: "Solución Tarea 1"
-author: "Integrantes: "
+author: "Integrantes: Sebasthián Valverde Martínez "
 date: '`r format(Sys.Date(), "%d %b, %Y")`'
 output:
   html_document: default

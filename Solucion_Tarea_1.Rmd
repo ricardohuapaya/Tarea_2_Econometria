@@ -1,6 +1,6 @@
 ---
 title: "Solución Tarea 1"
-author: "Integrantes: Sebasthián Valverde Martínez "
+author: "Integrantes: María Fernanda Villalobos Barboza B78304, Ricardo Huapaya Rey B83936, Sebasthián Valverde Martínez B98083"
 date: '`r format(Sys.Date(), "%d %b, %Y")`'
 output:
   html_document: default
@@ -17,7 +17,7 @@ library(readxl)
 library(dplyr)
 library(stargazer)
 
-setwd("~/UCR/Tarea_1_Econometria")
+setwd("C:/Users/FamiliaFeliz/Documents/GitHub/Tarea_1_Econometria")
 
 cigs = read_excel("Data/CigarettesB.xlsx")
 
@@ -29,7 +29,6 @@ datos_reg <- select(energy, Costo= COST, Produccion = output, Trabajo=labor,
 euroenergy = read_excel("Data/EuroEnergy.xlsx")
 ```
 
-# Solución de Tarea 1
 
 En este presente documento se procede a realizar un analisis econometrico de diversas bases de datos de interes. Para ello se selecionaron las bases:
 
@@ -86,7 +85,7 @@ ggplot( data = cigs,
 Haciendo un analisis de correlacion promieamente entre la variable ``PACKS`` y cada una de sus variables explicativas nos da un resultado similar a la intuición grafica. El resultado matematico indica que existe una correlación negativa debil entre ingreso y la cantidad de cigarros consumidos.
 
 ```{r, echo=FALSE}
-cor(cigs)
+round(cor(cigs), 2)
 ```
 
 
@@ -122,12 +121,13 @@ Tomando una prueba de significancia conjunta tal que nuestra hipotesis nula sea;
 Para la base de datos 2.6 tomaremos la variable `Costo` como nuestra variable dependiente que será analizada. Esta variable representa el costo en dolares por cada mil kwh. Las variables explicativas el salario promedio de la firma, el indice de capital, el precio de combustible y el output final en millones de kwh.
 
 $$
-Costo = \beta_{0}+ \beta_{1}trabajo+\beta_{2}capital+\beta_{3}combustible+\beta_{4}produccion +\mu
+Costo = \beta_{0}+ \beta_{1}trabajo+\beta_{2}capital+\beta_{3}producción+\beta_{4}combustible +\mu
 $$
 
 ### 2.1 Resumen: Analisis Descriptivo
 
-Realizamos un analisis grafico para nuestras 5 variables: ``Costo``, ``salario``, ``Capital``, ``Combustible`` y ``produccion``  se puede apreciar en el siguiente gráfico que existe cierto nivel de correlación negativa entre el consumo y el precio. 
+Realizamos un analisis grafico para nuestras 5 variables: ``Costo``, ``Trabajo``, ``Capital``, ``Producción`` y ``Combustible``; se ve que existe una correlación positiva con las variables explicativas.
+Esto quiere decir que conforme la variable `Costo` incremente las variables explicativas mencionadas también aumentaran.
 
 ```{r, echo = FALSE}
 ggplot( data = datos_reg, 
@@ -187,7 +187,7 @@ ggplot( data = datos_reg,
 ```
 
 ```{r, echo=FALSE}
-cor(datos_reg)
+round(cor(datos_reg),2)  
 ```
 ### 2.2 Regresión Lineal
 
@@ -197,17 +197,25 @@ Con el fin de analizar la regresión lineal de nuestras variables, utilizaremos 
 linear.energy <- lm( Costo ~ Produccion + Trabajo + Capital + Combustible, data= datos_reg)
 ```
 
-El cual nos muestra que en promedio se consumiria $4.3$ paquetes de cigarillos si el precio y los ingresos fueran $0$. En este otro caso note que dada la definición del modelo $\beta_{1}$ es un indicador de Elasticidad precio de la demanda de cigarrillos. Considere que al ser mayor a uno no sigue la intuición econimica incial que los cigarrillos son ineslasticos. 
-
 ```{r, echo=FALSE, warning=FALSE}
 stargazer(linear.energy, type = "text", title = "Cuadro #2: Resultados Regresión")
 coef = coefficients(linear.energy)
 ```
-Cuando las variables explicativas toman el valor de 0 los costos son negativos, luego interpretando los coeficientes de las variables explicativas en las pruebas t. Cabe resaltar que _las tres primeras variables explicativas_ tienen rendimientos decrecientes luego la cuarta variable de combustible  presenta redimientos crecientes a escala 
+Cuando las variables explicativas toman el valor de 0 los costos son negativos. Cabe resaltar que _las tres primeras variables explicativas_ tienen rendimientos decrecientes luego la cuarta variable de combustible  presenta redimientos crecientes a escala.
 
 ### 2.3 Pruebas t
+```{r}
+summary(linear.energy)
+```
+Viendo los resultados de las pruebas T con una Ho: B´s=0; se puede afirmar con un nivel de significancia del 5% que los coeficientes no son iguales a 0, esto quiere decir que se rechaza la Ho
+
 
 ### 2.4 Prueba F
+```{r}
+summary(linear.energy)
+```
+Interpretando la prueba F de significancia conjunta del modelo con la función summary donde la Ho: B´s(en conjunto)= 0 se puede afirmar que 
+los coeficientes de las variables explicativas no son 0 ya que el p-value asociado a la prueba es practicamente 0.
 
 ## 3. Analisis Euroenergy
 
@@ -229,7 +237,7 @@ ggplot( data = euroenergy,
           x = GDP_1,
           y = energy_1
       )) + geom_point(color = "red") +
-  labs( title = "Europa: Nivel del PIB Real y Conusmo de Energía",
+  labs( title = "Europa: Nivel del PIB Real y Consumo de Energía",
         subtitle = "En miles de millones de dolares y miles de millones de kg",
         x = "PIB Real",
         y = "Consumo de Energía"
@@ -288,3 +296,6 @@ Tomando $H_{0}: B_{1}=0$, La prueba $t$ realizada para el PIB nos devuelve un P-
 _Note que al haber solo una variable explicativa no es necesario hacer una prueba de significancia conjunta._
 
 ## Conclusión
+
+
+

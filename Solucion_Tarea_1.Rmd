@@ -247,7 +247,7 @@ Definamos los siguientes casos:
 *Caso a*: "energy" es la variable dependiente (es el caso a desarrollar):
 
 $$
-ln(energy) = \beta_{0}+\beta_{1}ln(GDP)+\mu
+energy = \beta_{0}+\beta_{1}GDP+\mu
 $$
 
 Se utiliza el siguiente código.

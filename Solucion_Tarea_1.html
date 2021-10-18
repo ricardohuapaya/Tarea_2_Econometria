@@ -319,7 +319,7 @@ Costo = \beta_{0}+ \beta_{1}trabajo+\beta_{2}capital+\beta_{3}combustible+\beta_
 <p>Definamos los siguientes casos:</p>
 <p><em>Caso a</em>: “energy” es la variable dependiente (es el caso a desarrollar):</p>
 <p><span class="math display">\[
-ln(energy) = \beta_{0}+\beta_{1}ln(GDP)+\mu
+energy = \beta_{0}+\beta_{1}GDP+\mu
 \]</span></p>
 <p>Se utiliza el siguiente código.</p>
 <pre class="r"><code>linear.1 &lt;- lm(energy ~ GDP, data = euroenergy)

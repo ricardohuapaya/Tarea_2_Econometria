@@ -26,8 +26,8 @@ round(cor(datos),2)
 
 
 #Punto 3
-#Se utiliza de la base de datos las variables de costo, produccion, trabjo
-#capital y combustible, la variable dependiente es el costo y las
+Se utiliza de la base de datos las variables de costo, produccion, trabjo
+capital y combustible, la variable dependiente es el costo y las
 #explicativas las demás
 modelo_reg <- lm( Costo ~ Produccion + Trabajo + Capital + Combustible, data= datos_reg)
 

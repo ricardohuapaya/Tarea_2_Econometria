@@ -14,6 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(ggplot2)
 library(readxl)
+library(dplyr)
 library(stargazer)
 
 setwd("~/UCR/Tarea_1_Econometria")
@@ -118,16 +119,95 @@ Tomando una prueba de significancia conjunta tal que nuestra hipotesis nula sea;
 
 ## 2. Analisis Energy
 
-```{r}
+Para la base de datos 2.6 tomaremos la variable `Costo` como nuestra variable dependiente que será analizada. Esta variable representa el costo en dolares por cada mil kwh. Las variables explicativas el salario promedio de la firma, el indice de capital, el precio de combustible y el output final en millones de kwh.
 
-summary(energy)
+$$
+Costo = \beta_{0}+ \beta_{1}trabajo+\beta_{2}capital+\beta_{3}combustible+\beta_{4}produccion +\mu
+$$
+
+### 2.1 Resumen: Analisis Descriptivo
+
+Realizamos un analisis grafico para nuestras 5 variables: ``Costo``, ``salario``, ``Capital``, ``Combustible`` y ``produccion``  se puede apreciar en el siguiente gráfico que existe cierto nivel de correlación negativa entre el consumo y el precio. 
+
+```{r, echo = FALSE}
+ggplot( data = datos_reg, 
+        mapping = aes(
+          x = Produccion,
+          y = Costo
+      )) + geom_point(color = "red") +
+  labs( title = "Relacion Costo y Producción de Energia",
+        #subtitle = "En ",
+        x = "Millones de kwh producidos ",
+        y = "Costo por cada 1000 hwh"
+  )+theme_grey() + scale_radius(3)
+
 ```
 
-```{R}
-
-plot(energy)
+```{r, echo = FALSE}
+ggplot( data = datos_reg, 
+        mapping = aes(
+          x = Trabajo,
+          y = Costo
+      )) + geom_point(color = "red") +
+  labs( title = "Relacion Costo y Salario Promedio",
+        #subtitle = "En ",
+        x = "Salario Promedio",
+        y = "Costo por cada 1000 hwh"
+  )+theme_grey() + scale_radius(3)
 
 ```
+
+
+```{r, echo = FALSE}
+ggplot( data = datos_reg, 
+        mapping = aes(
+          x = Capital,
+          y = Costo
+      )) + geom_point(color = "red") +
+  labs( title = "Relacion Costo e Indice de Capital",
+        #subtitle = "En ",
+        x = "Indice de Capital",
+        y = "Costo por cada 1000 hwh"
+  )+theme_grey() + scale_radius(3)
+
+```
+
+```{r, echo = FALSE}
+ggplot( data = datos_reg, 
+        mapping = aes(
+          x = Capital,
+          y = Combustible
+      )) + geom_point(color = "red") +
+  labs( title = "Relacion Costo y Precio de Combustible",
+        #subtitle = "En ",
+        x = "Precio de combustible",
+        y = "Costo por cada 1000 hwh"
+  )+theme_grey() + scale_radius(3)
+
+```
+
+```{r, echo=FALSE}
+cor(datos_reg)
+```
+### 2.2 Regresión Lineal
+
+Con el fin de analizar la regresión lineal de nuestras variables, utilizaremos el siguiente codigo:
+
+```{r, warning = FALSE}
+linear.energy <- lm( Costo ~ Produccion + Trabajo + Capital + Combustible, data= datos_reg)
+```
+
+El cual nos muestra que en promedio se consumiria $4.3$ paquetes de cigarillos si el precio y los ingresos fueran $0$. En este otro caso note que dada la definición del modelo $\beta_{1}$ es un indicador de Elasticidad precio de la demanda de cigarrillos. Considere que al ser mayor a uno no sigue la intuición econimica incial que los cigarrillos son ineslasticos. 
+
+```{r, echo=FALSE, warning=FALSE}
+stargazer(linear.energy, type = "text", title = "Cuadro #2: Resultados Regresión")
+coef = coefficients(linear.energy)
+```
+Cuando las variables explicativas toman el valor de 0 los costos son negativos, luego interpretando los coeficientes de las variables explicativas en las pruebas t. Cabe resaltar que _las tres primeras variables explicativas_ tienen rendimientos decrecientes luego la cuarta variable de combustible  presenta redimientos crecientes a escala 
+
+### 2.3 Pruebas t
+
+### 2.4 Prueba F
 
 ## 3. Analisis Euroenergy
 

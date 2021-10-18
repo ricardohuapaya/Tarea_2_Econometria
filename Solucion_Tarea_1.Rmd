@@ -9,7 +9,9 @@ theme: "journal"
 ---
 
 ```{r setup, echo=FALSE}
+
 knitr::opts_chunk$set(echo = TRUE)
+
 library(ggplot2)
 library(readxl)
 library(stargazer)
@@ -23,15 +25,23 @@ energy = read_excel("Data/Electricity1970.xlsx")
 euroenergy = read_excel("Data/EuroEnergy.xlsx")
 ```
 
-## Solución Tarea 1
+# Solución de Tarea 1
 
-En este presente documento se procede a realizar un analisis econometrico de diversas bases de datos de interes. Para ello se selecionaron las bases: 2.2 CigarettesB: Cigarette Consumption Data, de 2.6 Electricity1970: Cost Function of Electricity Producers 1970 & 2.7 EuroEnergy: European Energy Consumption Data. La estructura del documento es de un analisis individual en el orden mencionado previemente. Para así al final discutir en una última sección las conclusones de cada analisis.
+En este presente documento se procede a realizar un analisis econometrico de diversas bases de datos de interes. Para ello se selecionaron las bases:
 
-## Analisis Cigarettes Data
+-   2.2 CigarettesB: Cigarette Consumption Data
 
-Para la base de datos 2.2 tomaremos la variable "PACKS" como la variable dependiente que será analizada. Esta variable representa el numero de paquetes consumidos por personas mayores de 16 años.
+-   2.6 Electricity1970: Cost Function of Electricity Producers 1970
 
-### Resumen Información
+-   2.7 EuroEnergy: European Energy Consumption Data.
+
+La estructura del documento es de un analisis individual en el orden mencionado previemente. Para así al final discutir en una última sección las conclusones de cada analisis.
+
+## 1. Analisis Cigarettes Data
+
+Para la base de datos 2.2 tomaremos la variable `PACKS` como la variable dependiente que será analizada. Esta variable representa el numero de paquetes consumidos por personas mayores de 16 años.
+
+### 1.1 Resumen Información
 
 ```{r, echo=FALSE}
 
@@ -55,6 +65,7 @@ ggplot( data = cigs,
   )+theme_grey() + scale_radius(3)
 
 ```
+
 ```{r}
 ggplot( data = cigs, 
         mapping = aes(
@@ -73,11 +84,13 @@ Haciendo un analisis de correlacion entre la variable PACKS y cada una de sus va
 ```{r}
 cor(cigs)
 ```
+
 Es decir que existe un nivel medio de correlacion negativa entre la cantidad de paquetes de cigarillos consumidos y su precio y una correlacion sumamente debil entre el ingreso per capita y su consumo.
 
 Con el fin de analizar la regresión lineal de nuestras variables, utilizaremos el siguiente codigo:
 
-### \*3.
+### 1.2 Regresión Lineal
+
 Con el fin de analizar la regresión lineal de nuestras variables, utilizaremos el siguiente codigo:
 
 ```{r, warning = FALSE}
@@ -89,23 +102,18 @@ coef = coefficients(linear.cigs)
 
 El cual nos muestra que en promedio se consumiria 4.3 paquetes de cigarillos si el precio y los ingresos fueran 0 y por cada unidad porcentual de cambio en el precio de los cigarillos en cada ciudad, se asocia a un cambio negativo de 133% en el promedio de la cantidad de cigarillos consumidos mientras que por cada unidad porcentual de cambio en ingreso disponible per capita se asocia a un cambio de 17.2% en el consumo de cigarillos.
 
-##4
+### 1.3 Pruebas t
 utilizando la misma función que en la pregunta anterior, se obtiene la información necesaria para obtener los resultados de la prueba t.
 
+Tomando H0: B1=0 (Precio no tiene efecto en consumo) La prueba t realizada para el precio nos devuelve un P-value de 0.000168, es decir un 0.168%, con estos datos podemos rechazar la hipotesis y decir que estadisticamente el precio de los cigarillos tiene un efecto sobre su consumo.
 
-Tomando H0: B1=0 (Precio no tiene efecto en consumo)
-La prueba t realizada para el precio nos devuelve un P-value de 0.000168, es decir un 0.168%, con estos datos podemos rechazar la hipotesis y decir que estadisticamente el precio de los cigarillos tiene un efecto sobre su consumo.
+Tomando H0: B2=0 (Ingreso no tiene efecto en consumo) La prueba t realizada para el ingreso nos devuelve un P-Value de 0.386 el cual, en una prueba con un 95% de significancia significaria que la probabilidad de cometer un error tipo 1 es significativamente mayor al 5% y por ello se puede rechazar la hipotesis nula.
 
-Tomando H0: B2=0 (Ingreso no tiene efecto en consumo)
-La prueba t realizada para el ingreso nos devuelve un P-Value de 0.386 el cual, en una prueba con un 95% de significancia significaria que la probabilidad de cometer un error tipo 1 es significativamente mayor al 5% y por ello se puede rechazar la hipotesis nula.
-
-
-## 5
+### 1.4 Pruebas F
 
 Tomando un H0: B1=B2=0 y al utilizar el codigo de:
 
-Nos da un P-value de prueba F de 0.0004, tomando un α=0.05, llegamos al resultado que se rechaza la hipotesis nula, es decir que las variables "income" y "price" sirven para explicar la variable dependiente de "PACKS", es decir que el precio de los cigarillos y el ingreso per capita de las personas tinen un efecto sobre el consumo promedio de paquetes de cigarillos.
-## Analisis Energy
+Nos da un P-value de prueba F de 0.0004, tomando un α=0.05, llegamos al resultado que se rechaza la hipotesis nula, es decir que las variables "income" y "price" sirven para explicar la variable dependiente de "PACKS", es decir que el precio de los cigarillos y el ingreso per capita de las personas tinen un efecto sobre el consumo promedio de paquetes de cigarillos. \#\# Analisis Energy
 
 ### Resumen
 
@@ -120,13 +128,13 @@ plot(energy)
 
 ```
 
-## Analisis Euroenergy
+## 3. Analisis Euroenergy
 
 Para esta base de datos se tiene información relevante respecto al consumo de enerergia de 20 paises. Solamente se tienen dos variables numéricas dentro de la base de datos: - *energy*, el consumo agregado de energia en millones de kilogramos equivalentes de Carbon. -*GDP*, el PIB real de cada paiases de 1980 a precios de 1975.
 
 Para este caso, ambas variables tomarán el papel de variable dependiente.
 
-### Resumen: Analisis Descriptivo
+### 3.1 Resumen: Analisis Descriptivo
 
 ```{r, echo=FALSE}
 table1 = summary(euroenergy)
@@ -152,7 +160,7 @@ ggplot( data = euroenergy,
   )+theme_grey() + scale_radius(3)
 ```
 
-### \*3.
+### 3.2 Regresión Lineal
 
 Definamos los siguientes casos:
 
@@ -178,17 +186,17 @@ coef = coefficients(linear.2)
 
 Cuando el consumo de energía es nulo, el GDP es positivo. Por cada unidad adicional de energía, el GDP se incrementa en 1.23 aproximadamente.
 
-### Pruebas $t$
+### 3.3 Pruebas t
 
 Para el caso del intercepto, la probabilidad de que se cumpla la hipótesis nula, es decir, que éste sea cero, es de 0.626, mientras que, para el caso del coeficiente de la única variable explicativa, es muy muy baja. Es decir, que la probabilidad de que éste sea cero es aproximadamente cero para esos niveles de significancia.
 
-### *5. Realice la prueba F de significancia conjunta del modelo (o modelos) de regresión anterior e interprete su resultado.*
+### 3.4 Pruebas F
 
 *Prueba F:* Se sigue con el uso de la función "summary(regresion)". Se sabe que la hipótesis nula de la prueba F consiste en que todos los coeficientes de la regresión sean iguales a cero. En el caso de la prueba anterior, se buscaba probar la misma hipótesis pero para cada uno de los coeficientes por aparte, acá se busca probar conjuntamente que éstos sean cero.
 
 Los resultados de la prueba, arrojan que, el F calculado de esta prueba es de 386.3 y tiene 1 y 18 grados de libertad. Se observa también que el P-value es muy próximo a cero, por lo tanto, no se acepta la hipótesis de que todos los coeficientes (conjuntamente) son cero.
 
-### *6. Cuando los datos lo permitan, defina un modelo de regresión lineal como base y realice la prueba F de modelo restringido versus modelo sin restringir e interprete cuál es más adecuado.*
+### 6. Cuando los datos lo permitan, defina un modelo de regresión lineal como base y realice la prueba F de modelo restringido versus modelo sin restringir e interprete cuál es más adecuado.
 
 Los datos no son suficientes como para elaborar modelos restringidos, puesto que, solamente se tienen dos variables.
 

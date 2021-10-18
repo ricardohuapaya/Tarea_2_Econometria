@@ -52,7 +52,7 @@ summary(modelo1)
 
 ```
 
-El cual nos muestra que en promedio se consumiria 4.3 paquetes de cigarillos si el precio y los ingresos fueran 0 y por cada unidad porcentual de cambio en el precio de los cigarillos en cada ciudad, se asocia a un cambio negativo de 133% en el promedio de la cantidad de cigarillos consumidos mientras que por cada unidad porcentual de cambio en ingreso disponible per capita se asocia a un cambio de 17.2% en el consumo de cigarillos.
+El cual nos muestra que en promedio se consumiria 4.3 paquetes de cigarillos si el precio y los ingresos fueran 0 y por cada unidad porcentual de cambio en el precio de los cigarillos en cada ciudad, se asocia a un cambio negativo de 1.33% en el promedio de la cantidad de cigarillos consumidos mientras que por cada unidad porcentual de cambio en ingreso disponible per capita se asocia a un cambio de 0.172% en el consumo de cigarillos.
 
 ##4
 utilizando la misma función que en la pregunta anterior, se obtiene la información necesaria para obtener los resultados de la prueba t.

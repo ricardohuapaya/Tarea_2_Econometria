@@ -1,0 +1,80 @@
+---
+title: "Tarea 1 Base 2.2"
+author: ""
+date: "10/17/2021"
+output: html_document
+---
+```{r,echo=FALSE}
+setwd("C:/Users/moras/OneDrive/Desktop/Semestre 2 2021/Econometria")
+data <- read.csv('CigarettesB.csv')
+modelo1 <-lm(PACKS ~ price+income, data=data)
+
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1
+
+Para la base de datos 2.2 tomaremos la variable "PACKS" como la variable dependiente que será analizada. Esta variable representa el numero de paquetes consumidos por personas mayores de 16 años.
+
+## 2
+
+Realizando un analisis grafico de nuestras 3 variables: "PACKS", "income" y "price" se puede ver que existe cierto nivel de correlación negativa entre el consumo y el precio. Asi mismo, se puede observar una leve correlacion positiva entre el ingreso disponible per capita y el precio de los cigarillos en el estado. knitr::include_graphics("PacksIncome.png")
+
+```{r,echo=FALSE}
+knitr::include_graphics("PacksPrice.png")
+knitr::include_graphics("PriceIncome.png")
+```
+
+Por el otro lado el ingreso no tiene mayor correlación con la cantidad de paquetes consumidos, tal como se puede apreciar en el siguiente gráfico:
+
+```{r,echo=FALSE}
+knitr::include_graphics("PacksIncome.png")
+```
+
+Haciendo un analisis de correlacion entre la variable PACKS y cada una de sus variables explicativas nos da un resultado de:
+```{r}
+cor(data$PACKS,data$price)
+cor(data$PACKS,data$income)
+```
+
+Es decir que existe un nivel medio de correlacion negativa entre la cantidad de paquetes de cigarillos consumidos y su precio y una correlacion sumamente debil entre el ingreso per capita y su consumo.
+
+## 3
+
+Con el fin de analizar la regresión lineal de nuestras variables, utilizaremos el siguiente codigo:
+
+```{r}
+modelo1 <-lm(PACKS ~ price+income, data=data)
+summary(modelo1)
+
+```
+
+El cual nos muestra que en promedio se consumiria 4.3 paquetes de cigarillos si el precio y los ingresos fueran 0 y por cada unidad porcentual de cambio en el precio de los cigarillos en cada ciudad, se asocia a un cambio negativo de 133% en el promedio de la cantidad de cigarillos consumidos mientras que por cada unidad porcentual de cambio en ingreso disponible per capita se asocia a un cambio de 17.2% en el consumo de cigarillos.
+
+##4
+utilizando la misma función que en la pregunta anterior, se obtiene la información necesaria para obtener los resultados de la prueba t.
+
+```{r}
+summary(modelo1)
+```
+
+
+Tomando H0: B1=0 (Precio no tiene efecto en consumo)
+La prueba t realizada para el precio nos devuelve un P-value de 0.000168, es decir un 0.168%, con estos datos podemos rechazar la hipotesis y decir que estadisticamente el precio de los cigarillos tiene un efecto sobre su consumo.
+
+Tomando H0: B2=0 (Ingreso no tiene efecto en consumo)
+La prueba t realizada para el ingreso nos devuelve un P-Value de 0.386 el cual, en una prueba con un 95% de significancia significaria que la probabilidad de cometer un error tipo 1 es significativamente mayor al 5% y por ello se puede rechazar la hipotesis nula.
+
+
+## 5
+
+Tomando un H0: B1=B2=0 y al utilizar el codigo de:
+```{r}
+summary(modelo1)
+```
+Nos da un P-value de prueba F de 0.0004, tomando un α=0.05, llegamos al resultado que se rechaza la hipotesis nula, es decir que las variables "income" y "price" sirven para explicar la variable dependiente de "PACKS", es decir que el precio de los cigarillos y el ingreso per capita de las personas tinen un efecto sobre el consumo promedio de paquetes de cigarillos.
+
+##6

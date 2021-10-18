@@ -8,7 +8,7 @@ output:
 theme: "journal"
 ---
 
-```{r setup, echo=FALSE}
+```{r setup, echo=FALSE, results='hide', message=FALSE}
 
 knitr::opts_chunk$set(echo = TRUE)
 
@@ -21,6 +21,9 @@ setwd("~/UCR/Tarea_1_Econometria")
 cigs = read_excel("Data/CigarettesB.xlsx")
 
 energy = read_excel("Data/Electricity1970.xlsx")
+
+datos_reg <- select(energy, Costo= COST, Produccion = output, Trabajo=labor,
+                Capital=capital, Combustible=fuel    )
 
 euroenergy = read_excel("Data/EuroEnergy.xlsx")
 ```
@@ -112,7 +115,6 @@ Tomando $H_{0}: B_{2}=0$  (Ingreso no tiene efecto en consumo) La prueba t reali
 
 Tomando una prueba de significancia conjunta tal que nuestra hipotesis nula sea; $H_{0}: B_{1}=B_{2}=0$. 
 
-Al correr el calculo del estadistico F, nos da un P-value de 0.0004. Entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula y concluimo que el precio de los cigarillos y el ingreso per capita de las personas pueden explicar el consumo promedio de paquetes de cigarillos. 
 
 ## 2. Analisis Energy
 
@@ -129,22 +131,17 @@ plot(energy)
 
 ## 3. Analisis Euroenergy
 
-Para esta base de datos se tiene información relevante respecto al consumo de enerergia de 20 paises. Solamente se tienen dos variables numéricas dentro de la base de datos: - *energy*, el consumo agregado de energia en millones de kilogramos equivalentes de Carbon. -*GDP*, el PIB real de cada paiases de 1980 a precios de 1975.
+Para esta base de datos se tiene información relevante respecto al consumo de enerergia de 20 paises. Solamente se tienen dos variables numéricas dentro de la base de datos: 
+-  *energy*, el consumo agregado de energia en millones de kilogramos equivalentes de Carbon. 
+-  *GDP*, el PIB real de cada paises de 1980 a precios de 1975.
 
-Para este caso, ambas variables tomarán el papel de variable dependiente.
+Para este caso, probamos cual variable le quedan mejor la cataegoria de variable independiente. 
 
 ### 3.1 Resumen: Analisis Descriptivo
 
-```{r, echo=FALSE}
-table1 = summary(euroenergy)
-stargazer(as.data.frame(euroenergy[c("GDP","energy")]), 
-          type = "text", 
-          title = "Cuadro #: Resumen Euroenergy")
-```
+Realizando un gráfico de puntos con la variable ``energy`` como variable dependiente y la variable ``GDP`` como variable explicativa, puede verse una cierta correlación. Parece ser que, ante incrementos en el GDP, surgen también aumentos en el consumo de energía. En otras palabras, conforme se incrementa el producto, el consumo de energía tiende a la alza (parece que ambas se relacionan positivamente) Lo anterior se demuestra en el siguiente gráfico:
 
-Realizando un gráfico de puntos con la variable "energy" como variable dependiente y la variable "GDP" como variable explicativa, puede verse una cierta correlación. Parece ser que, ante incrementos en el GDP, surgen también aumentos en el consumo de energía. En otras palabras, conforme se incrementa el producto, el consumo de energía tiende a la alza (parece que ambas se relacionan positivamente) Lo anterior se demuestra en el siguiente gráfico:
-
-```{r}
+```{r, echo =FALSE}
 euroenergy$GDP_1 = euroenergy$GDP/100000
 euroenergy$energy_1 = euroenergy$energy/100000
 ggplot( data = euroenergy, 
@@ -158,28 +155,40 @@ ggplot( data = euroenergy,
         y = "Consumo de Energía"
   )+theme_grey() + scale_radius(3)
 ```
-
+Al pasar se un analisis grafico a uno matematico vemos que efectivamente existe una correlación fuerte, 
+```{r, echo=FALSE}
+print('Calculo de Correlación: ') 
+cor(euroenergy$GDP, euroenergy$energy)
+```
 ### 3.2 Regresión Lineal
 
 Definamos los siguientes casos:
 
-*Caso a*: "energy" es la variable dependiente (es el caso a desarrollar)
+*Caso a*: "energy" es la variable dependiente (es el caso a desarrollar):
+
+$$
+ln(energy) = \beta_{0}+\beta_{1}ln(GDP)+\mu
+$$
 
 Se utiliza el siguiente código.
 
 ```{r, warning = FALSE}
 linear.1 <- lm(energy ~ GDP, data = euroenergy)
-stargazer(linear.1, type = "text", title = "Cuadro #: Resultados Regresión")
+stargazer(linear.1, type = "text", title = "Cuadro #3: Resultados Regresión")
 coef = coefficients(linear.1)
 ```
 
 El resultado que se obtiene indica que, cuando el GDP es nulo, el consumo de energía es negativo. Por cada unidad adicional de GDP, el consumo de energía se incrementa en 0.78 (aproximadamente). Casi tiene una relación de uno a uno.
 
-*Caso b*: "GDP" es la variable dependiente (definido únicamente para este inciso a fin de determinar, por curiosidad, qué ocurre cuando el GDP es la variable dependiente).
+*Caso b*: "GDP" es la variable dependiente (definido únicamente para este inciso a fin de determinar, por curiosidad, qué ocurre cuando el GDP es la variable dependiente):
+
+$$
+ln(GDP) = \beta_{0}+\beta_{1}ln(energy)+\mu
+$$
 
 ```{r, warning = FALSE}
 linear.2 <- lm(GDP ~ energy, data = euroenergy)
-stargazer(linear.2, type = "text", title = "Cuadro #: Resultados Regresión")
+stargazer(linear.2, type = "text", title = "Cuadro #4: Resultados Regresión")
 coef = coefficients(linear.2)
 ```
 
@@ -187,16 +196,15 @@ Cuando el consumo de energía es nulo, el GDP es positivo. Por cada unidad adici
 
 ### 3.3 Pruebas t
 
-Para el caso del intercepto, la probabilidad de que se cumpla la hipótesis nula, es decir, que éste sea cero, es de 0.626, mientras que, para el caso del coeficiente de la única variable explicativa, es muy muy baja. Es decir, que la probabilidad de que éste sea cero es aproximadamente cero para esos niveles de significancia.
+El valor de hacer ambos casos es notar la importancia de comprender los datos. Note que el caso donde obtenemos mejor información es del *caso a*; ya que del caso *caso b* tendriamos que el consumo de energia aumenta el PIB. Lo anterior no sentido y nos revela que ambas variables sostienen una relación espuría.
+
+Utilizando la misma función que en la pregunta anterior, y el cuadro 3 se obtiene la información necesaria para obtener los resultados de la prueba $t$.
+
+Tomando $H_{0}: B_{1}=0$, La prueba $t$ realizada para el PIB nos devuelve un P-value de #PONER NUMERO, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el nivel de GDP no afecta el nivel de consumo de energia. 
+
 
 ### 3.4 Pruebas F
 
-*Prueba F:* Se sigue con el uso de la función "summary(regresion)". Se sabe que la hipótesis nula de la prueba F consiste en que todos los coeficientes de la regresión sean iguales a cero. En el caso de la prueba anterior, se buscaba probar la misma hipótesis pero para cada uno de los coeficientes por aparte, acá se busca probar conjuntamente que éstos sean cero.
-
-Los resultados de la prueba, arrojan que, el F calculado de esta prueba es de 386.3 y tiene 1 y 18 grados de libertad. Se observa también que el P-value es muy próximo a cero, por lo tanto, no se acepta la hipótesis de que todos los coeficientes (conjuntamente) son cero.
-
-### 6. Cuando los datos lo permitan, defina un modelo de regresión lineal como base y realice la prueba F de modelo restringido versus modelo sin restringir e interprete cuál es más adecuado.
-
-Los datos no son suficientes como para elaborar modelos restringidos, puesto que, solamente se tienen dos variables.
+_Note que al haber solo una variable explicativa no es necesario hacer una prueba de significancia conjunta._
 
 ## Conclusión

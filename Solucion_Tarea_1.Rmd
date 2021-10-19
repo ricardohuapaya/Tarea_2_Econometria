@@ -82,7 +82,7 @@ ggplot( data = cigs,
   )+theme_grey() + scale_radius(3)
 ```
 
-Haciendo un analisis de correlacion promieamente entre la variable ``PACKS`` y cada una de sus variables explicativas nos da un resultado similar a la intuición grafica. El resultado matematico indica que existe una correlación negativa debil entre ingreso y la cantidad de cigarros consumidos.
+Haciendo un analisis de correlacion entre la variable ``PACKS`` y cada una de sus variables explicativas nos da un resultado similar a la intuición grafica. El resultado matematico indica que existe una correlación negativa debil entre ingreso y la cantidad de cigarros consumidos.
 
 ```{r, echo=FALSE}
 round(cor(cigs), 2)
@@ -128,8 +128,8 @@ $$
 
 ### 2.1 Resumen: Analisis Descriptivo
 
-Realizamos un analisis grafico para nuestras 5 variables: ``Costo``, ``Trabajo``, ``Capital``, ``Producción`` y ``Combustible``; se ve que existe una correlación positiva con las variables explicativas.
-Esto quiere decir que conforme la variable `Costo` incremente las variables explicativas mencionadas también aumentaran.
+Realizamos un analisis grafico para nuestras 5 variables: ``Costo``, ``Trabajo``, ``Capital``, ``Producción`` y ``Combustible``; donde se puede observar el `Costo` y su relación que tiene con las diferentes variables explicativas.
+
 
 ```{r, echo = FALSE}
 ggplot( data = datos_reg, 
@@ -188,9 +188,19 @@ ggplot( data = datos_reg,
 
 ```
 
+Al observar los gráficos se interpreta que las variables explicativas mantienen una cierta correlación con la variable de costo.
+
+
+Luego, realizando un analisis de correlacion entre la variable ``Costos`` y cada una de sus variables explicativas nos da un resultado que respalda nuestra interpretación anterior; donde matematicamente se indica que existe una correlación positiva de la variable ``Costos`` con las variables explicativas.
+Esto quiere decir que conforme la variable `Costo` incremente las variables explicativas también lo harán. 
+
+
+
 ```{r, echo=FALSE}
 round(cor(datos_reg),2)  
 ```
+
+
 ### 2.2 Regresión Lineal
 
 Con el fin de analizar la regresión lineal de nuestras variables, utilizaremos el siguiente codigo:
@@ -203,7 +213,7 @@ linear.energy <- lm( Costo ~ Produccion + Trabajo + Capital + Combustible, data=
 stargazer(linear.energy, type = "text", title = "Cuadro #2: Resultados Regresión")
 coef = coefficients(linear.energy)
 ```
-Cuando las variables explicativas toman el valor de 0 los costos son negativos. Cabe resaltar que _las tres primeras variables explicativas_ tienen rendimientos decrecientes luego la cuarta variable de combustible  presenta redimientos crecientes a escala.
+Cuando las variables explicativas toman el valor de 0 los costos son negativos. -----Cabe resaltar que las tres primeras variables explicativas tienen rendimientos decrecientes luego la cuarta variable de combustible  presenta redimientos crecientes a escala.-------- eliminar
 
 ### 2.3 Pruebas t
 Utilizando la misma función que en la pregunta anterior, y con la función summary se obtiene la información necesaria para obtener los resultados de la prueba $t$.

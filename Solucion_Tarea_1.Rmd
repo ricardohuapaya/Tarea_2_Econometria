@@ -17,7 +17,7 @@ library(readxl)
 library(dplyr)
 library(stargazer)
 
-setwd("C:/Users/FamiliaFeliz/Documents/GitHub/Tarea_1_Econometria")
+setwd("~/UCR/Tarea_1_Econometria")
 
 cigs = read_excel("Data/CigarettesB.xlsx")
 
@@ -30,7 +30,7 @@ euroenergy = read_excel("Data/EuroEnergy.xlsx")
 ```
 
 
-En este presente documento se procede a realizar un analisis econometrico de diversas bases de datos de interes. Para ello se selecionaron las bases:
+En este presente documento se procede a realizar un análisis econométrico de diversas bases de datos de interés. Para ello se selecionaron las bases:
 
 -   2.2 CigarettesB: Cigarette Consumption Data
 
@@ -38,11 +38,11 @@ En este presente documento se procede a realizar un analisis econometrico de div
 
 -   2.7 EuroEnergy: European Energy Consumption Data.
 
-La estructura del documento es de un analisis individual en el orden mencionado previamente. Para así al final discutir en una última sección las conclusiones de cada analisis.
+La estructura del documento es de un análisis individual en el orden mencionado previamente. Para así al final discutir en una última sección las conclusiones de cada análisis. El codigo del codigo se encuentra en el siguiente [repositorio](https://github.com/ricardohuapaya/Tarea_1_Econometria).
 
-## 1. Analisis Cigarettes Data
+## 1. Análisis Cigarettes Data
 
-Para la base de datos 2.2 tomaremos la variable `PACKS` como nuestra variable dependiente que será analizada. Esta variable representa el numero de paquetes consumidos por personas mayores de 16 años en casa Estado; asi nuestro modelo propuesto para el primer analsis sería de la forma:
+Para la base de datos 2.2 tomaremos la variable `PACKS` como nuestra variable dependiente que será analizada. Esta variable representa el número de paquetes consumidos por personas mayores de 16 años en casa Estado; así nuestro modelo propuesto para el primer análisis sería de la forma:
 
 $$
 ln(PACKS) = \beta_{0}+\beta_{1}ln(price)+\beta_{2}ln(income)+\mu
@@ -51,7 +51,7 @@ $$
 ### 1.1 Resumen Información
 
 
-Realizamos un analisis grafico para nuestras 3 variables: ``PACKS``, ``income`` y ``price``; se puede apreciar en el siguiente gráfico que existe cierto nivel de correlación negativa entre el consumo y el precio. 
+Realizamos un análisis gráfico para nuestras 3 variables: ``PACKS``, ``income`` y ``price``; se puede apreciar en el siguiente gráfico que existe cierto nivel de correlación negativa entre el consumo y el precio. 
 
 ```{r, echo = FALSE}
 ggplot( data = cigs, 
@@ -60,14 +60,14 @@ ggplot( data = cigs,
           y = PACKS
       )) + geom_point(color = "red") +
   labs( title = "Consumo de Cigarros y Precio",
-        subtitle = "Escala Logaritmitca",
+        subtitle = "Escala Logarítmica",
         x = "Precio",
         y = "Paquetes de cigarrillos consumidos"
   )+theme_grey() + scale_radius(3)
 
 ```
 
-Por otra parte, note que si realizamos un grafico similar al previo donde comparamos el ingreso medio por estado con el consumo medio por persona en cada estado, se infiere que no existe una correlación entre ambas variables. 
+Por otra parte, note que si realizamos un gráfico similar al previo donde comparamos el ingreso medio por estado con el consumo medio por persona en cada estado, se infiere que no existe una correlación entre ambas variables. 
 
 ```{r, echo=FALSE}
 ggplot( data = cigs, 
@@ -76,13 +76,13 @@ ggplot( data = cigs,
           y = PACKS
       )) + geom_point(color = "red") +
   labs( title = "Consumo de Cigarros e Ingreso",
-        subtitle = "Escala Logaritmitca",
+        subtitle = "Escala Logarítmica",
         x = "Ingreso",
         y = "Paquetes de cigarrillos consumidos"
   )+theme_grey() + scale_radius(3)
 ```
 
-Haciendo un analisis de correlacion entre la variable ``PACKS`` y cada una de sus variables explicativas nos da un resultado similar a la intuición grafica. El resultado matematico indica que existe una correlación negativa debil entre ingreso y la cantidad de cigarros consumidos.
+Haciendo un análisis de correlación propiamente entre la variable ``PACKS`` y cada una de sus variables explicativas nos da un resultado similar a la intuición grafica. El resultado matemático indica que existe una correlación negativa débil entre ingreso y la cantidad de cigarros consumidos.
 
 ```{r, echo=FALSE}
 round(cor(cigs), 2)
@@ -91,13 +91,14 @@ round(cor(cigs), 2)
 
 ### 1.2 Regresión Lineal
 
-Con el fin de analizar la regresión lineal de nuestras variables, utilizaremos el siguiente codigo:
+Con el fin de analizar la regresión lineal de nuestras variables, utilizaremos el siguiente código:
 
 ```{r, warning = FALSE}
 linear.cigs <-lm(PACKS ~ price+income, data=cigs)
 ```
 
-El cual nos muestra que en promedio se consumiria $4.3$ paquetes de cigarillos si el precio y los ingresos fueran $0$. En este otro caso note que dada la definición del modelo $\beta_{1}$ es un indicador de Elasticidad precio de la demanda de cigarrillos. Considere que al ser mayor a uno no sigue la intuición econimica incial que los cigarrillos son ineslasticos. 
+El cual nos muestra que en promedio se consumiría $4.3$ paquetes de cigarillos si el precio y los ingresos fueran $0$. En este otro caso note que dada la definición del modelo $\beta_{1}$ es un indicador de Elasticidad precio de la demanda de cigarrillos. Considere que al ser mayor a uno no sigue la intuición económica incial que los cigarrillos son ineslásticos. 
+
 
 ```{r, echo=FALSE, warning=FALSE}
 stargazer(linear.cigs, type = "text", title = "Cuadro #1: Resultados Regresión")
@@ -287,15 +288,14 @@ El P-value obtenido de la prueba del estadistico f tiende a 0, por lo tanto con 
 
 
 
-
-
-
-
 ## 3. Analisis Euroenergy
 
-Para esta base de datos se tiene información relevante respecto al consumo de enerergia de 20 paises. Solamente se tienen dos variables numéricas dentro de la base de datos: 
--  *energy*, el consumo agregado de energia en millones de kilogramos equivalentes de Carbon. 
--  *GDP*, el PIB real de cada paises de 1980 a precios de 1975.
+Para esta base de datos se tiene información relevante respecto al consumo de energía de 20 países. Solamente se tienen dos variables numéricas dentro de la base de datos: 
+
+-  *energy*, el consumo agregado de energía en millones de kilogramos equivalentes de Carbón. 
+
+-  *GDP*, el PIB real de cada país de 1980 a precios de 1975.
+
 
 Para este caso, probamos cual variable le quedan mejor la cataegoria de variable independiente. 
 
@@ -312,12 +312,14 @@ ggplot( data = euroenergy,
           y = energy_1
       )) + geom_point(color = "red") +
   labs( title = "Europa: Nivel del PIB Real y Consumo de Energía",
-        subtitle = "En miles de millones de dolares y miles de millones de kg",
+        subtitle = "En miles de millones de dólares y miles de millones de kg",
         x = "PIB Real",
         y = "Consumo de Energía"
   )+theme_grey() + scale_radius(3)
 ```
-Al pasar se un analisis grafico a uno matematico vemos que efectivamente existe una correlación fuerte, 
+
+Al pasar de un analisis grafico a uno matematico vemos que efectivamente existe una correlación fuerte, 
+
 ```{r, echo=FALSE}
 print('Calculo de Correlación: ') 
 cor(euroenergy$GDP, euroenergy$energy)
@@ -335,26 +337,12 @@ $$
 Se utiliza el siguiente código.
 
 ```{r, warning = FALSE}
-linear.1 <- lm(energy ~ GDP, data = euroenergy)
-stargazer(linear.1, type = "text", title = "Cuadro #3: Resultados Regresión")
-coef = coefficients(linear.1)
-```
-
-El resultado que se obtiene indica que, cuando el GDP es nulo, el consumo de energía es negativo. Por cada unidad adicional de GDP, el consumo de energía se incrementa en 0.78 (aproximadamente). Casi tiene una relación de uno a uno.
-
-*Caso b*: "GDP" es la variable dependiente (definido únicamente para este inciso a fin de determinar, por curiosidad, qué ocurre cuando el GDP es la variable dependiente):
-
-$$
-GDP = \beta_{0}+\beta_{1}energy+\mu
-$$
-
-```{r, warning = FALSE}
 linear.2 <- lm(GDP ~ energy, data = euroenergy)
 stargazer(linear.2, type = "text", title = "Cuadro #4: Resultados Regresión")
 coef = coefficients(linear.2)
 ```
 
-Cuando el consumo de energía es nulo, el GDP es positivo. Por cada unidad adicional de energía, el GDP se incrementa en 1.23 aproximadamente.
+Cuando el consumo de energía es nulo, el GDP es positivo. Por cada unidad adicional de energía, el GDP se incrementa en 1.23, aproximadamente.
 
 ### 3.3 Pruebas t
 
@@ -362,14 +350,21 @@ El valor de hacer ambos casos es notar la importancia de comprender los datos. N
 
 Utilizando la misma función que en la pregunta anterior, y el cuadro 3 se obtiene la información necesaria para obtener los resultados de la prueba $t$.
 
-Tomando $H_{0}: B_{1}=0$, La prueba $t$ realizada para el PIB nos devuelve un P-value de #PONER NUMERO, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el nivel de GDP no afecta el nivel de consumo de energia. 
+Tomando $H_{0}: \beta_{1}=0$, La prueba $t$ realizada para el PIB nos devuelve un P-value demasiado bajo, prácticamente cero. Entonces con un nivel de significancia del 5% podemos rechazar la hipótesis nula donde el nivel de GDP no afecta el nivel de consumo de energía. 
 
 
 ### 3.4 Pruebas F
 
-_Note que al haber solo una variable explicativa no es necesario hacer una prueba de significancia conjunta._
+_Note que al haber sólo una variable explicativa no es necesario hacer una prueba de significancia conjunta._
 
 ## Conclusión
+
+En el caso del tema de cigarrillos se puede observar que no toda la intuición económica se va a reflejar de manera empírica. Los cigarrillos, al tratarse de un tema que en muchos casos se cataloga como adicción (algo indispensable), se corre un sesgo previo que se tiene que analizar al buscar aplicar la teoría económica. 
+
+En lo que muestra la segunda base de datos utilizada, es la relación existente entre el el precio de combustible y los costos. Prácticamente, se tiene una relación de uno a uno, mientras que, en las otras variables, si bien tienen correlaciones positivas importantes, ante cambios en estas variables, éstas afectan en una menor cuantía al costo de producción. 
+Se ve también, que este es un problema microeconómico. 
+
+En el caso del tema del consumo de energía explicada por el PIB, demuestra la importancia que tiene el PIB en el consumo de energía. 
 
 
 

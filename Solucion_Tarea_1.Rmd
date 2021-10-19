@@ -1,6 +1,6 @@
 ---
 title: "Solución Tarea 1"
-author: "Integrantes: María Fernanda Villalobos Barboza B78304, Ricardo Huapaya Rey B83936, Sebasthián Valverde Martínez B98083, Sebastian Mora Rojas B95205"
+author: "Integrantes: María Fernanda Villalobos Barboza B78304, \nRicardo Huapaya Rey B83936, \nSebasthián Valverde Martínez B98083, \nSebastian Mora Rojas B95205\n"
 date: '`r format(Sys.Date(), "%d %b, %Y")`'
 output:
   html_document: default
@@ -228,9 +228,9 @@ Tomando $H_{0}:  \beta_{3}=0$ (Capital no tiene efecto en los Costos) La prueba 
 Tomando $H_{0}:  \beta_{4}=0$  (Combustible no tiene efecto en los Costos) La prueba $t$ realizada para la producción nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde la producción no afecta los costos.
 
 ### 2.4 Prueba F
-Utilizando la misma función que en la pregunta anterior, y con el cuadro 2 se obtiene la información necesaria para obtener los resultados de la prueba $f$.
+Utilizando la misma función que en la pregunta anterior, y con el cuadro 2 se obtiene la información necesaria para obtener los resultados de la prueba F.
 Tomando una prueba de significancia conjunta tal que nuestra hipotesis nula sea; $H_{0}:  \beta_{1}= \beta_{2}=\beta_{3}= \beta_{4}=0$.
-La prueba $f$ conjunta nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% se rechaza la hipotesis nula conjunta de que los B´s no afectan los costos.
+La prueba F conjunta nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% se rechaza la hipotesis nula conjunta de que los B´s no afectan los costos.
 
 
 

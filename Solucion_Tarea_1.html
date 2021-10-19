@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Integrantes: María Fernanda Villalobos Barboza B78304, Ricardo Huapaya Rey B83936, Sebasthián Valverde Martínez B98083" />
+<meta name="author" content="Integrantes: María Fernanda Villalobos Barboza B78304, Ricardo Huapaya Rey B83936, Sebasthián Valverde Martínez B98083, Sebastian Mora Rojas B95205" />
 
 
 <title>Solución Tarea 1</title>
@@ -346,7 +346,7 @@ pre code {
 
 
 <h1 class="title toc-ignore">Solución Tarea 1</h1>
-<h4 class="author">Integrantes: María Fernanda Villalobos Barboza B78304, Ricardo Huapaya Rey B83936, Sebasthián Valverde Martínez B98083</h4>
+<h4 class="author">Integrantes: María Fernanda Villalobos Barboza B78304, Ricardo Huapaya Rey B83936, Sebasthián Valverde Martínez B98083, Sebastian Mora Rojas B95205</h4>
 <h4 class="date">18 oct, 2021</h4>
 
 </div>
@@ -415,7 +415,7 @@ ln(PACKS) = \beta_{0}+\beta_{1}ln(price)+\beta_{2}ln(income)+\mu
 </div>
 <div id="pruebas-f" class="section level3">
 <h3>1.4 Pruebas F</h3>
-<p>Utilizando la misma función que en la pregunta anterior, y con el cuadro 1 se obtiene la información necesaria para obtener los resultados de la prueba <span class="math inline">\(f\)</span>. Tomando una prueba de significancia conjunta tal que nuestra hipotesis nula sea; <span class="math inline">\(H_{0}: \beta_{1}= \beta_{2}=0\)</span>. La prueba <span class="math inline">\(f\)</span> conjunta nos devuelve un P-value de ****, entonces con un nivel de significancia del 5% se —– la hipotesis nula conjunta de que el precio y el ingreso</p>
+<p>Utilizando la misma función que en la pregunta anterior, y con el cuadro 1 se obtiene la información necesaria para obtener los resultados de la prueba <span class="math inline">\(f\)</span>. Tomando una prueba de significancia conjunta tal que nuestra hipotesis nula sea; <span class="math inline">\(H_{0}: \beta_{1}= \beta_{2}=0\)</span>. La prueba <span class="math inline">\(f\)</span> conjunta nos devuelve un P-value de 0.0004168, entonces con un nivel de significancia del 5% se rechaza la hipotesis nula conjunta de que el precio y el ingreso no afectan el consumo.</p>
 </div>
 </div>
 <div id="analisis-energy" class="section level2">
@@ -474,42 +474,18 @@ Costo = \beta_{0}+ \beta_{1}trabajo+\beta_{2}capital+\beta_{3}producción+\beta_
 ## F Statistic          737.261*** (df = 4; 153)  
 ## ===============================================
 ## Note:               *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
-<p>Cuando las variables explicativas toman el valor de 0 los costos son negativos. —–Cabe resaltar que las tres primeras variables explicativas tienen rendimientos decrecientes luego la cuarta variable de combustible presenta redimientos crecientes a escala.——– eliminar</p>
+<p>Cuando las variables explicativas toman el valor de 0 los costos son negativos.Cabe resaltar que las tres primeras variables explicativas tienen costos decrecientes luego la cuarta variable de combustible presenta costos crecientes.</p>
 </div>
 <div id="pruebas-t-1" class="section level3">
 <h3>2.3 Pruebas t</h3>
-<p>Utilizando la misma función que en la pregunta anterior, y con la función summary se obtiene la información necesaria para obtener los resultados de la prueba <span class="math inline">\(t\)</span>.</p>
-<pre class="r"><code>summary(linear.energy)</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = Costo ~ Produccion + Trabajo + Capital + Combustible, 
-##     data = datos_reg)
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -101.438   -5.590    1.279    6.649   97.813 
-## 
-## Coefficients:
-##               Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept) -8.456e+01  1.511e+01  -5.595 9.90e-08 ***
-## Produccion   5.471e-03  1.036e-04  52.823  &lt; 2e-16 ***
-## Trabajo      3.239e-03  1.207e-03   2.684  0.00807 ** 
-## Capital      3.035e-01  1.370e-01   2.215  0.02822 *  
-## Combustible  1.072e+00  2.064e-01   5.194 6.48e-07 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 19.59 on 153 degrees of freedom
-## Multiple R-squared:  0.9507, Adjusted R-squared:  0.9494 
-## F-statistic: 737.3 on 4 and 153 DF,  p-value: &lt; 2.2e-16</code></pre>
-<p>Tomando <span class="math inline">\(H_{0}: \beta_{1}=0\)</span> (Producción no tiene efecto en los Costos) La prueba <span class="math inline">\(t\)</span> realizada para la producción nos devuelve un P-value de 2e-16 (0.00000000000000022), entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde la producción no afecta los costos.</p>
+<p>Utilizando la misma función que en la pregunta anterior, y con el cuadro 2 se obtiene la información necesaria para obtener los resultados de la prueba <span class="math inline">\(t\)</span>. Tomando <span class="math inline">\(H_{0}: \beta_{1}=0\)</span> (Producción no tiene efecto en los Costos) La prueba <span class="math inline">\(t\)</span> realizada para la producción nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde la producción no afecta los costos.</p>
 <p>Tomando <span class="math inline">\(H_{0}: \beta_{2}=0\)</span> (Trabajo no tiene efecto en los Costos) La prueba <span class="math inline">\(t\)</span> realizada para la producción nos devuelve un P-value de 0.00807, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el trabajo no afecta los costos.</p>
 <p>Tomando <span class="math inline">\(H_{0}: \beta_{3}=0\)</span> (Capital no tiene efecto en los Costos) La prueba <span class="math inline">\(t\)</span> realizada para la producción nos devuelve un P-value de 0.02822, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el capital no afecta los costos.</p>
-<p>Tomando <span class="math inline">\(H_{0}: \beta_{4}=0\)</span> (Combustible no tiene efecto en los Costos) La prueba <span class="math inline">\(t\)</span> realizada para la producción nos devuelve un P-value de 6.48e-07 (0.000000648), entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde la producción no afecta los costos.</p>
+<p>Tomando <span class="math inline">\(H_{0}: \beta_{4}=0\)</span> (Combustible no tiene efecto en los Costos) La prueba <span class="math inline">\(t\)</span> realizada para la producción nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde la producción no afecta los costos.</p>
 </div>
 <div id="prueba-f" class="section level3">
 <h3>2.4 Prueba F</h3>
-<p>Utilizando la misma función que en la pregunta anterior, y con el cuadro 2 se obtiene la información necesaria para obtener los resultados de la prueba <span class="math inline">\(f\)</span>. Tomando una prueba de significancia conjunta tal que nuestra hipotesis nula sea; <span class="math inline">\(H_{0}: \beta_{1}= \beta_{2}=\beta_{3}= \beta_{4}=0\)</span>. La prueba <span class="math inline">\(f\)</span> conjunta nos devuelve un P-value de 2.2e-16 (0.00000000000000022000000000000002), entonces con un nivel de significancia del 5% se rechaza la hipotesis nula conjunta de que los B´s no afectan los costos.</p>
+<p>Utilizando la misma función que en la pregunta anterior, y con el cuadro 2 se obtiene la información necesaria para obtener los resultados de la prueba <span class="math inline">\(f\)</span>. Tomando una prueba de significancia conjunta tal que nuestra hipotesis nula sea; <span class="math inline">\(H_{0}: \beta_{1}= \beta_{2}=\beta_{3}= \beta_{4}=0\)</span>. La prueba <span class="math inline">\(f\)</span> conjunta nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% se rechaza la hipotesis nula conjunta de que los B´s no afectan los costos.</p>
 <p>Interpretando la prueba F de significancia conjunta del modelo con la función summary donde la Ho: B´s(en conjunto)= 0 se puede afirmar que los coeficientes de las variables explicativas no son 0 ya que el p-value asociado a la prueba es practicamente 0.</p>
 </div>
 <div id="prueba-f-de-modelo-restringido-vs-modelo-sin-restringir" class="section level3">
@@ -562,7 +538,7 @@ stargazer(linear.1, type = &quot;text&quot;, title = &quot;Cuadro #3: Resultados
 <p>El resultado que se obtiene indica que, cuando el GDP es nulo, el consumo de energía es negativo. Por cada unidad adicional de GDP, el consumo de energía se incrementa en 0.78 (aproximadamente). Casi tiene una relación de uno a uno.</p>
 <p><em>Caso b</em>: “GDP” es la variable dependiente (definido únicamente para este inciso a fin de determinar, por curiosidad, qué ocurre cuando el GDP es la variable dependiente):</p>
 <p><span class="math display">\[
-GDP = \beta_{0}+\beta_{1}ln(energy)+\mu
+GDP = \beta_{0}+\beta_{1}energy+\mu
 \]</span></p>
 <pre class="r"><code>linear.2 &lt;- lm(GDP ~ energy, data = euroenergy)
 stargazer(linear.2, type = &quot;text&quot;, title = &quot;Cuadro #4: Resultados Regresión&quot;)</code></pre>

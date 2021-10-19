@@ -1,6 +1,6 @@
 ---
 title: "Solución Tarea 1"
-author: "Integrantes: María Fernanda Villalobos Barboza B78304, Ricardo Huapaya Rey B83936, Sebasthián Valverde Martínez B98083"
+author: "Integrantes: María Fernanda Villalobos Barboza B78304, Ricardo Huapaya Rey B83936, Sebasthián Valverde Martínez B98083, Sebastian Mora Rojas B95205"
 date: '`r format(Sys.Date(), "%d %b, %Y")`'
 output:
   html_document: default
@@ -114,7 +114,8 @@ Tomando $H_{0}:  \beta_{2}=0$  (Ingreso no tiene efecto en consumo) La prueba t 
 ### 1.4 Pruebas F
 Utilizando la misma función que en la pregunta anterior, y con el cuadro 1 se obtiene la información necesaria para obtener los resultados de la prueba $f$.
 Tomando una prueba de significancia conjunta tal que nuestra hipotesis nula sea; $H_{0}:  \beta_{1}= \beta_{2}=0$.
-La prueba $f$ conjunta nos devuelve un P-value de ****, entonces con un nivel de significancia del 5% se ----- la hipotesis nula conjunta de que el precio y el ingreso
+La prueba $f$ conjunta nos devuelve un P-value de 0.0004168, entonces con un nivel de significancia del 5% se rechaza la hipotesis nula conjunta de que el precio y el ingreso no afectan el consumo.
+
 
 
 
@@ -213,27 +214,22 @@ linear.energy <- lm( Costo ~ Produccion + Trabajo + Capital + Combustible, data=
 stargazer(linear.energy, type = "text", title = "Cuadro #2: Resultados Regresión")
 coef = coefficients(linear.energy)
 ```
-Cuando las variables explicativas toman el valor de 0 los costos son negativos. -----Cabe resaltar que las tres primeras variables explicativas tienen rendimientos decrecientes luego la cuarta variable de combustible  presenta redimientos crecientes a escala.-------- eliminar
+Cuando las variables explicativas toman el valor de 0 los costos son negativos.Cabe resaltar que las tres primeras variables explicativas tienen costos decrecientes luego la cuarta variable de combustible  presenta costos crecientes.
 
 ### 2.3 Pruebas t
-Utilizando la misma función que en la pregunta anterior, y con la función summary se obtiene la información necesaria para obtener los resultados de la prueba $t$.
-```{r}
-summary(linear.energy)
-```
-
-
-Tomando $H_{0}:  \beta_{1}=0$ (Producción no tiene efecto en los Costos) La prueba $t$ realizada para la producción nos devuelve un P-value de 2e-16 (0.00000000000000022), entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde la producción no afecta los costos. 
+Utilizando la misma función que en la pregunta anterior, y con el cuadro 2 se obtiene la información necesaria para obtener los resultados de la prueba $t$.
+Tomando $H_{0}:  \beta_{1}=0$ (Producción no tiene efecto en los Costos) La prueba $t$ realizada para la producción nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde la producción no afecta los costos. 
 
 Tomando $H_{0}:  \beta_{2}=0$  (Trabajo no tiene efecto en los Costos) La prueba $t$ realizada para la producción nos devuelve un P-value de 0.00807, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el trabajo no afecta los costos.
 
 Tomando $H_{0}:  \beta_{3}=0$ (Capital no tiene efecto en los Costos) La prueba $t$ realizada para la producción nos devuelve un P-value de 0.02822, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el capital no afecta los costos.
 
-Tomando $H_{0}:  \beta_{4}=0$  (Combustible no tiene efecto en los Costos) La prueba $t$ realizada para la producción nos devuelve un P-value de 6.48e-07 (0.000000648), entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde la producción no afecta los costos.
+Tomando $H_{0}:  \beta_{4}=0$  (Combustible no tiene efecto en los Costos) La prueba $t$ realizada para la producción nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde la producción no afecta los costos.
 
 ### 2.4 Prueba F
 Utilizando la misma función que en la pregunta anterior, y con el cuadro 2 se obtiene la información necesaria para obtener los resultados de la prueba $f$.
 Tomando una prueba de significancia conjunta tal que nuestra hipotesis nula sea; $H_{0}:  \beta_{1}= \beta_{2}=\beta_{3}= \beta_{4}=0$.
-La prueba $f$ conjunta nos devuelve un P-value de 2.2e-16 (0.00000000000000022000000000000002), entonces con un nivel de significancia del 5% se rechaza la hipotesis nula conjunta de que los B´s no afectan los costos.
+La prueba $f$ conjunta nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% se rechaza la hipotesis nula conjunta de que los B´s no afectan los costos.
 
 
 
@@ -296,7 +292,7 @@ El resultado que se obtiene indica que, cuando el GDP es nulo, el consumo de ene
 *Caso b*: "GDP" es la variable dependiente (definido únicamente para este inciso a fin de determinar, por curiosidad, qué ocurre cuando el GDP es la variable dependiente):
 
 $$
-GDP = \beta_{0}+\beta_{1}ln(energy)+\mu
+GDP = \beta_{0}+\beta_{1}energy+\mu
 $$
 
 ```{r, warning = FALSE}

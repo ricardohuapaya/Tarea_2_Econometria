@@ -490,6 +490,48 @@ Costo = \beta_{0}+ \beta_{1}trabajo+\beta_{2}capital+\beta_{3}producción+\beta_
 </div>
 <div id="prueba-f-de-modelo-restringido-vs-modelo-sin-restringir" class="section level3">
 <h3>2.5 Prueba F de Modelo Restringido vs Modelo Sin Restringir</h3>
+<p>Buscamos probar la hipotesis nula de que <span class="math inline">\(\beta_{1}= 1-\beta_{2}\)</span>, <span class="math inline">\(\beta_{3} = 0\)</span> y <span class="math inline">\(\beta_{4}=1\)</span>. Para eso se realizan los siguientes calculos</p>
+<pre class="r"><code>linear.energy.no.restringido &lt;- lm( Costo ~ Produccion + Trabajo + Capital + Combustible, data= datos_reg)
+
+#Tamaño de los coeficientes
+K&lt;-length(linear.energy.no.restringido$coefficients)
+
+#Tamaño de la muestra
+Te&lt;-nrow(datos_reg)
+
+#SRC_NR
+SRC_NR&lt;-sum((linear.energy.no.restringido$residuals^{2}))
+
+
+#Tamaño de los coeficientes
+K&lt;-length(linear.energy.no.restringido$coefficients)
+
+#Tamaño de la muestra. Nota: &quot;T&quot; está reservado como abreviación de TRUE!!
+Te&lt;-nrow(datos_reg)
+
+#SRC_NR
+SRC_NR&lt;-sum((linear.energy.no.restringido$residuals^{2}))
+
+
+datos_reg$rest.1 = datos_reg$Trabajo - datos_reg$Capital
+
+
+
+linear.energy.restringido &lt;- lm( Costo ~ 1 + rest.1 + Combustible , data = datos_reg )
+
+#Cantidad de restric
+J&lt;-3
+
+#SRC_NR
+SRC_R&lt;-sum((linear.energy.restringido$residuals^{2}))
+
+estadistico_F&lt;- ((SRC_R-SRC_NR)/J)/(SRC_NR/(Te-K))
+
+p_value_F&lt;-pf(estadistico_F,J,Te-K, lower.tail = FALSE)
+
+print(p_value_F)</code></pre>
+<pre><code>## [1] 1.849222e-98</code></pre>
+<p>El P-value obtenido de la prueba del estadistico f tiende a 0, por lo tanto con un nivel de significancia del 5% se rechazan las tres restricciones.</p>
 </div>
 </div>
 <div id="analisis-euroenergy" class="section level2">

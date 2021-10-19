@@ -237,6 +237,59 @@ Interpretando la prueba F de significancia conjunta del modelo con la función s
 los coeficientes de las variables explicativas no son 0 ya que el p-value asociado a la prueba es practicamente 0.
 
 ### 2.5 Prueba F de Modelo Restringido vs Modelo Sin Restringir
+Buscamos probar la hipotesis nula de que $\beta_{1}= 1-\beta_{2}$, $\beta_{3} = 0$ y $\beta_{4}=1$. 
+Para eso se realizan los siguientes calculos 
+
+```{r}
+
+linear.energy.no.restringido <- lm( Costo ~ Produccion + Trabajo + Capital + Combustible, data= datos_reg)
+
+#Tamaño de los coeficientes
+K<-length(linear.energy.no.restringido$coefficients)
+
+#Tamaño de la muestra
+Te<-nrow(datos_reg)
+
+#SRC_NR
+SRC_NR<-sum((linear.energy.no.restringido$residuals^{2}))
+
+
+#Tamaño de los coeficientes
+K<-length(linear.energy.no.restringido$coefficients)
+
+#Tamaño de la muestra. Nota: "T" está reservado como abreviación de TRUE!!
+Te<-nrow(datos_reg)
+
+#SRC_NR
+SRC_NR<-sum((linear.energy.no.restringido$residuals^{2}))
+
+
+datos_reg$rest.1 = datos_reg$Trabajo - datos_reg$Capital
+
+
+
+linear.energy.restringido <- lm( Costo ~ 1 + rest.1 + Combustible , data = datos_reg )
+
+#Cantidad de restric
+J<-3
+
+#SRC_NR
+SRC_R<-sum((linear.energy.restringido$residuals^{2}))
+
+estadistico_F<- ((SRC_R-SRC_NR)/J)/(SRC_NR/(Te-K))
+
+p_value_F<-pf(estadistico_F,J,Te-K, lower.tail = FALSE)
+
+print(p_value_F)
+
+```
+El P-value obtenido de la prueba del estadistico f tiende a 0, por lo tanto con un nivel de significancia del 5% se rechazan las tres restricciones. 
+
+
+
+
+
+
 
 ## 3. Analisis Euroenergy
 

@@ -1,0 +1,50 @@
+Tarea 1 Laboratorio
+Grupo:
+María Fernanda Villalobos Barboza B78304, 
+Ricardo Huapaya Rey B83936, 
+Sebasthián Valverde Martínez B98083, 
+Sebastian Mora Rojas B95205
+
+Comentarios y nota: 9.5/10
+
+1. Cigarettes: El análisis está bien hecho. Respecto a la regresión, la intuición nos diría que mayor
+ingreso debería tener un efecto positivo en el consumo de cigarros. Tal vez para la segunda tarea,
+pueden probar si es necesaria una variable instrumental (prueba de Hausman). En estos datos creo no
+hay más variables, por lo que no podrían hacer la estimación, pero sí concluir si es necesaria dicha
+variable.
+
+2. Energy: El análisis descriptivo está bien.
+Respecto a la regresión, no siempre se debe o se puede hacer una interpretación literal del coeficiente
+de la constante. No existen costos negativos. En este caso, la constante es negativa porque algunos
+betas son altas relativamente y provocan que la constante deba ser negativa para que la recta de 
+regresión minimice los residuos. La otra es interpretar la constante como un costo fijo, es decir,
+si se pasa beta_0 al otro lado, los costos nunca son cero, sino que son al menos 84.56. En otras 
+palabras, es una interpretación no literal sino sacada de la intuición económica. Se necesita cierto
+nivel de producción para hacer que los costos sean cero.
+
+Para la tarea 2 me gustaría ver la interpretación de los coeficientes. Recuerden que no utilizaron 
+logaritmos acá, podrían probar con logaritmos y ver qué resulta.
+
+En la prueba F de modelo restringido versus sin restringir intentaron hacer una prueba compleja. 
+Les recomiendo hacer algo más simple para la tarea 2 y que usen la función linearHypothesis, ya que
+creo el cálculo manual que hicieron es incorrecto. Básicamente, beta_4 no se fijó como 1 en la 
+regresión restringida y rest.1 no sé si representa que beta_1 = 1- beta_2. El añadir 1 al inicio
+de la fórmula no aporta nada, la función lm incluye la constante de forma automática. 
+
+Realizar esta prueba con linearHypothesis sería: linearHypothesis(model, c("trabajo+capital=1", 
+"produccion=0", "combustible=1"), test = "F")
+
+3. Euroenergy: Podrían incluir las variables en logarítmo para que no tengan coeficientes grandes y
+difíciles de interpretar. Además, creo hay un error de escritura: la ecuación y la estimación tienen
+variables dependientes diferentes. Me parecería más interesante ver si países con más GDP son los que
+consumen más energía, la intuición es que sí. Podrían probar si es una elasticidad unitaria para la 
+tarea 2.
+
+4. Conclusiones: 
+Lo de la adicción que mencionan es interesante, pero sí hay intuición económica para eso:
+más ingreso da más capacidad de comprar y más precio no debería afectar el consumo. Pueden hacer
+esas pruebas estadísticas.
+
+La conclusión del PIB y la energía sería errónea porque realizaron la regresión de GDP explicado por
+energy.
+

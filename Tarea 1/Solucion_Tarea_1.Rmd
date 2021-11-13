@@ -1,0 +1,370 @@
+---
+title: "Solución Tarea 1"
+author: "Integrantes: María Fernanda Villalobos Barboza B78304, \nRicardo Huapaya Rey B83936, \nSebasthián Valverde Martínez B98083, \nSebastian Mora Rojas B95205\n"
+date: '`r format(Sys.Date(), "%d %b, %Y")`'
+output:
+  html_document: default
+  word_document: default
+theme: "journal"
+---
+
+```{r setup, echo=FALSE, results='hide', message=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+library(readxl)
+library(dplyr)
+library(stargazer)
+
+setwd("~/Tarea_1_Econometria")
+
+cigs = read_excel("Data/CigarettesB.xlsx")
+
+energy = read_excel("Data/Electricity1970.xlsx")
+
+datos_reg <- select(energy, Costo= COST, Produccion = output, Trabajo=labor,
+                Capital=capital, Combustible=fuel    )
+
+euroenergy = read_excel("Data/EuroEnergy.xlsx")
+```
+
+
+En este presente documento se procede a realizar un análisis econométrico de diversas bases de datos de interés. Para ello se selecionaron las bases:
+
+-   2.2 CigarettesB: Cigarette Consumption Data
+
+-   2.6 Electricity1970: Cost Function of Electricity Producers 1970
+
+-   2.7 EuroEnergy: European Energy Consumption Data.
+
+La estructura del documento es de un análisis individual en el orden mencionado previamente. Para así al final discutir en una última sección las conclusiones de cada análisis. El codigo del codigo se encuentra en el siguiente [repositorio](https://github.com/ricardohuapaya/Tarea_1_Econometria).
+
+## 1. Análisis Cigarettes Data
+
+Para la base de datos 2.2 tomaremos la variable `PACKS` como nuestra variable dependiente que será analizada. Esta variable representa el número de paquetes consumidos por personas mayores de 16 años en casa Estado; así nuestro modelo propuesto para el primer análisis sería de la forma:
+
+$$
+ln(PACKS) = \beta_{0}+\beta_{1}ln(price)+\beta_{2}ln(income)+\mu
+$$
+
+### 1.1 Resumen Información
+
+
+Realizamos un análisis gráfico para nuestras 3 variables: ``PACKS``, ``income`` y ``price``; se puede apreciar en el siguiente gráfico que existe cierto nivel de correlación negativa entre el consumo y el precio. 
+
+```{r, echo = FALSE}
+ggplot( data = cigs, 
+        mapping = aes(
+          x = price,
+          y = PACKS
+      )) + geom_point(color = "red") +
+  labs( title = "Consumo de Cigarros y Precio",
+        subtitle = "Escala Logarítmica",
+        x = "Precio",
+        y = "Paquetes de cigarrillos consumidos"
+  )+theme_grey() + scale_radius(3)
+
+```
+
+Por otra parte, note que si realizamos un gráfico similar al previo donde comparamos el ingreso medio por estado con el consumo medio por persona en cada estado, se infiere que no existe una correlación entre ambas variables. 
+
+```{r, echo=FALSE}
+ggplot( data = cigs, 
+        mapping = aes(
+          x = income,
+          y = PACKS
+      )) + geom_point(color = "red") +
+  labs( title = "Consumo de Cigarros e Ingreso",
+        subtitle = "Escala Logarítmica",
+        x = "Ingreso",
+        y = "Paquetes de cigarrillos consumidos"
+  )+theme_grey() + scale_radius(3)
+```
+
+Haciendo un análisis de correlación propiamente entre la variable ``PACKS`` y cada una de sus variables explicativas nos da un resultado similar a la intuición grafica. El resultado matemático indica que existe una correlación negativa débil entre ingreso y la cantidad de cigarros consumidos.
+
+```{r, echo=FALSE}
+round(cor(cigs), 2)
+```
+
+
+### 1.2 Regresión Lineal
+
+Con el fin de analizar la regresión lineal de nuestras variables, utilizaremos el siguiente código:
+
+```{r, warning = FALSE}
+linear.cigs <-lm(PACKS ~ price+income, data=cigs)
+```
+
+El cual nos muestra que en promedio se consumiría $4.3$ paquetes de cigarillos si el precio y los ingresos fueran $0$. En este otro caso note que dada la definición del modelo $\beta_{1}$ es un indicador de Elasticidad precio de la demanda de cigarrillos. Considere que al ser mayor a uno no sigue la intuición económica incial que los cigarrillos son ineslásticos. 
+
+
+```{r, echo=FALSE, warning=FALSE}
+stargazer(linear.cigs, type = "text", title = "Cuadro #1: Resultados Regresión")
+coef = coefficients(linear.cigs)
+```
+
+### 1.3 Pruebas t
+Utilizando la misma función que en la pregunta anterior, y con el cuadro 1 se obtiene la información necesaria para obtener los resultados de la prueba $t$.
+
+Tomando $H_{0}:  \beta_{1}=0$ (Precio no tiene efecto en consumo) La prueba $t$ realizada para el precio nos devuelve un P-value de 0.000168, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el precio del paquete no afecta el consumo. 
+
+Tomando $H_{0}:  \beta_{2}=0$  (Ingreso no tiene efecto en consumo) La prueba t realizada para el ingreso nos devuelve un P-Value de 0.386 el cual, entonces con un nivel de significancia del 5% podemos no podemos rechazar la hipotesis nula donde el precio del paquete no afecta el consumo. 
+
+### 1.4 Pruebas F
+Utilizando la misma función que en la pregunta anterior, y con el cuadro 1 se obtiene la información necesaria para obtener los resultados de la prueba $f$.
+Tomando una prueba de significancia conjunta tal que nuestra hipotesis nula sea; $H_{0}:  \beta_{1}= \beta_{2}=0$.
+La prueba $f$ conjunta nos devuelve un P-value de 0.0004168, entonces con un nivel de significancia del 5% se rechaza la hipotesis nula conjunta de que el precio y el ingreso no afectan el consumo.
+
+
+
+
+## 2. Analisis Energy
+
+Para la base de datos 2.6 tomaremos la variable `Costo` como nuestra variable dependiente que será analizada. Esta variable representa el costo en dolares por cada mil kwh. Las variables explicativas el salario promedio de la firma, el indice de capital, el precio de combustible y el output final en millones de kwh.
+
+$$
+Costo = \beta_{0}+ \beta_{1}trabajo+\beta_{2}capital+\beta_{3}producción+\beta_{4}combustible +\mu
+$$
+
+### 2.1 Resumen: Analisis Descriptivo
+
+Realizamos un analisis grafico para nuestras 5 variables: ``Costo``, ``Trabajo``, ``Capital``, ``Producción`` y ``Combustible``; donde se puede observar el `Costo` y su relación que tiene con las diferentes variables explicativas.
+
+
+```{r, echo = FALSE}
+ggplot( data = datos_reg, 
+        mapping = aes(
+          x = Produccion,
+          y = Costo
+      )) + geom_point(color = "red") +
+  labs( title = "Relacion Costo y Producción de Energia",
+        #subtitle = "En ",
+        x = "Millones de kwh producidos ",
+        y = "Costo por cada 1000 hwh"
+  )+theme_grey() + scale_radius(3)
+
+```
+
+```{r, echo = FALSE}
+ggplot( data = datos_reg, 
+        mapping = aes(
+          x = Trabajo,
+          y = Costo
+      )) + geom_point(color = "red") +
+  labs( title = "Relacion Costo y Salario Promedio",
+        #subtitle = "En ",
+        x = "Salario Promedio",
+        y = "Costo por cada 1000 hwh"
+  )+theme_grey() + scale_radius(3)
+
+```
+
+
+```{r, echo = FALSE}
+ggplot( data = datos_reg, 
+        mapping = aes(
+          x = Capital,
+          y = Costo
+      )) + geom_point(color = "red") +
+  labs( title = "Relacion Costo e Indice de Capital",
+        #subtitle = "En ",
+        x = "Indice de Capital",
+        y = "Costo por cada 1000 hwh"
+  )+theme_grey() + scale_radius(3)
+
+```
+
+```{r, echo = FALSE}
+ggplot( data = datos_reg, 
+        mapping = aes(
+          x = Capital,
+          y = Combustible
+      )) + geom_point(color = "red") +
+  labs( title = "Relacion Costo y Precio de Combustible",
+        #subtitle = "En ",
+        x = "Precio de combustible",
+        y = "Costo por cada 1000 hwh"
+  )+theme_grey() + scale_radius(3)
+
+```
+
+Al observar los gráficos se interpreta que las variables explicativas mantienen una cierta correlación con la variable de costo.
+
+
+Luego, realizando un analisis de correlacion entre la variable ``Costos`` y cada una de sus variables explicativas nos da un resultado que respalda nuestra interpretación anterior; donde matematicamente se indica que existe una correlación positiva de la variable ``Costos`` con las variables explicativas.
+Esto quiere decir que conforme la variable `Costo` incremente las variables explicativas también lo harán. 
+
+
+
+```{r, echo=FALSE}
+round(cor(datos_reg),2)  
+```
+
+
+### 2.2 Regresión Lineal
+
+Con el fin de analizar la regresión lineal de nuestras variables, utilizaremos el siguiente codigo:
+
+```{r, warning = FALSE}
+linear.energy <- lm( Costo ~ Produccion + Trabajo + Capital + Combustible, data= datos_reg)
+```
+
+```{r, echo=FALSE, warning=FALSE}
+stargazer(linear.energy, type = "text", title = "Cuadro #2: Resultados Regresión")
+coef = coefficients(linear.energy)
+```
+Cuando las variables explicativas toman el valor de 0 los costos son negativos.Cabe resaltar que las tres primeras variables explicativas tienen costos decrecientes luego la cuarta variable de combustible  presenta costos crecientes.
+
+### 2.3 Pruebas t
+Utilizando la misma función que en la pregunta anterior, y con el cuadro 2 se obtiene la información necesaria para obtener los resultados de la prueba $t$.
+Tomando $H_{0}:  \beta_{1}=0$ (Producción no tiene efecto en los Costos) La prueba $t$ realizada para la producción nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde la producción no afecta los costos. 
+
+Tomando $H_{0}:  \beta_{2}=0$  (Trabajo no tiene efecto en los Costos) La prueba $t$ realizada para la producción nos devuelve un P-value de 0.00807, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el trabajo no afecta los costos.
+
+Tomando $H_{0}:  \beta_{3}=0$ (Capital no tiene efecto en los Costos) La prueba $t$ realizada para la producción nos devuelve un P-value de 0.02822, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el capital no afecta los costos.
+
+Tomando $H_{0}:  \beta_{4}=0$  (Combustible no tiene efecto en los Costos) La prueba $t$ realizada para la producción nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde la producción no afecta los costos.
+
+### 2.4 Prueba F
+Utilizando la misma función que en la pregunta anterior, y con el cuadro 2 se obtiene la información necesaria para obtener los resultados de la prueba F.
+Tomando una prueba de significancia conjunta tal que nuestra hipotesis nula sea; $H_{0}:  \beta_{1}= \beta_{2}=\beta_{3}= \beta_{4}=0$.
+La prueba F conjunta nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% se rechaza la hipotesis nula conjunta de que los B´s no afectan los costos.
+
+
+
+Interpretando la prueba F de significancia conjunta del modelo con la función summary donde la Ho: B´s(en conjunto)= 0 se puede afirmar que 
+los coeficientes de las variables explicativas no son 0 ya que el p-value asociado a la prueba es practicamente 0.
+
+### 2.5 Prueba F de Modelo Restringido vs Modelo Sin Restringir
+Buscamos probar la hipotesis nula de que $\beta_{1}= 1-\beta_{2}$, $\beta_{3} = 0$ y $\beta_{4}=1$. 
+Para eso se realizan los siguientes calculos 
+
+```{r}
+
+linear.energy.no.restringido <- lm( Costo ~ Produccion + Trabajo + Capital + Combustible, data= datos_reg)
+
+#Tamaño de los coeficientes
+K<-length(linear.energy.no.restringido$coefficients)
+
+#Tamaño de la muestra
+Te<-nrow(datos_reg)
+
+#SRC_NR
+SRC_NR<-sum((linear.energy.no.restringido$residuals^{2}))
+
+
+#Tamaño de los coeficientes
+K<-length(linear.energy.no.restringido$coefficients)
+
+#Tamaño de la muestra. Nota: "T" está reservado como abreviación de TRUE!!
+Te<-nrow(datos_reg)
+
+#SRC_NR
+SRC_NR<-sum((linear.energy.no.restringido$residuals^{2}))
+
+
+datos_reg$rest.1 = datos_reg$Trabajo - datos_reg$Capital
+
+
+
+linear.energy.restringido <- lm( Costo ~ 1 + rest.1 + Combustible , data = datos_reg )
+
+#Cantidad de restric
+J<-3
+
+#SRC_NR
+SRC_R<-sum((linear.energy.restringido$residuals^{2}))
+
+estadistico_F<- ((SRC_R-SRC_NR)/J)/(SRC_NR/(Te-K))
+
+p_value_F<-pf(estadistico_F,J,Te-K, lower.tail = FALSE)
+
+print(p_value_F)
+
+```
+El P-value obtenido de la prueba del estadistico f tiende a 0, por lo tanto con un nivel de significancia del 5% se rechazan las tres restricciones. 
+
+
+
+## 3. Analisis Euroenergy
+
+Para esta base de datos se tiene información relevante respecto al consumo de energía de 20 países. Solamente se tienen dos variables numéricas dentro de la base de datos: 
+
+-  *energy*, el consumo agregado de energía en millones de kilogramos equivalentes de Carbón. 
+
+-  *GDP*, el PIB real de cada país de 1980 a precios de 1975.
+
+
+Para este caso, probamos cual variable le quedan mejor la cataegoria de variable independiente. 
+
+### 3.1 Resumen: Analisis Descriptivo
+
+Realizando un gráfico de puntos con la variable ``energy`` como variable dependiente y la variable ``GDP`` como variable explicativa, puede verse una cierta correlación. Parece ser que, ante incrementos en el GDP, surgen también aumentos en el consumo de energía. En otras palabras, conforme se incrementa el producto, el consumo de energía tiende a la alza (parece que ambas se relacionan positivamente) Lo anterior se demuestra en el siguiente gráfico:
+
+```{r, echo =FALSE}
+euroenergy$GDP_1 = euroenergy$GDP/100000
+euroenergy$energy_1 = euroenergy$energy/100000
+ggplot( data = euroenergy, 
+        mapping = aes(
+          x = GDP_1,
+          y = energy_1
+      )) + geom_point(color = "red") +
+  labs( title = "Europa: Nivel del PIB Real y Consumo de Energía",
+        subtitle = "En miles de millones de dólares y miles de millones de kg",
+        x = "PIB Real",
+        y = "Consumo de Energía"
+  )+theme_grey() + scale_radius(3)
+```
+
+Al pasar de un analisis grafico a uno matematico vemos que efectivamente existe una correlación fuerte, 
+
+```{r, echo=FALSE}
+print('Calculo de Correlación: ') 
+cor(euroenergy$GDP, euroenergy$energy)
+```
+### 3.2 Regresión Lineal
+
+Definamos los siguientes casos:
+
+*Caso a*: "energy" es la variable dependiente (es el caso a desarrollar):
+
+$$
+energy = \beta_{0}+\beta_{1}GDP+\mu
+$$
+
+Se utiliza el siguiente código.
+
+```{r, warning = FALSE}
+linear.2 <- lm(GDP ~ energy, data = euroenergy)
+stargazer(linear.2, type = "text", title = "Cuadro #4: Resultados Regresión")
+coef = coefficients(linear.2)
+```
+
+Cuando el consumo de energía es nulo, el GDP es positivo. Por cada unidad adicional de energía, el GDP se incrementa en 1.23, aproximadamente.
+
+### 3.3 Pruebas t
+
+El valor de hacer ambos casos es notar la importancia de comprender los datos. Note que el caso donde obtenemos mejor información es del *caso a*; ya que del caso *caso b* tendriamos que el consumo de energia aumenta el PIB. Lo anterior no sentido y nos revela que ambas variables sostienen una relación espuría.
+
+Utilizando la misma función que en la pregunta anterior, y el cuadro 3 se obtiene la información necesaria para obtener los resultados de la prueba $t$.
+
+Tomando $H_{0}: \beta_{1}=0$, La prueba $t$ realizada para el PIB nos devuelve un P-value demasiado bajo, prácticamente cero. Entonces con un nivel de significancia del 5% podemos rechazar la hipótesis nula donde el nivel de GDP no afecta el nivel de consumo de energía. 
+
+
+### 3.4 Pruebas F
+
+_Note que al haber sólo una variable explicativa no es necesario hacer una prueba de significancia conjunta._
+
+## Conclusión
+
+En el caso del tema de cigarrillos se puede observar que no toda la intuición económica se va a reflejar de manera empírica. Los cigarrillos, al tratarse de un tema que en muchos casos se cataloga como adicción (algo indispensable), se corre un sesgo previo que se tiene que analizar al buscar aplicar la teoría económica. 
+
+En lo que muestra la segunda base de datos utilizada, es la relación existente entre el el precio de combustible y los costos. Prácticamente, se tiene una relación de uno a uno, mientras que, en las otras variables, si bien tienen correlaciones positivas importantes, ante cambios en estas variables, éstas afectan en una menor cuantía al costo de producción. 
+Se ve también, que este es un problema microeconómico. 
+
+En el caso del tema del consumo de energía explicada por el PIB, demuestra la importancia que tiene el PIB en el consumo de energía. 
+
+
+

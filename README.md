@@ -1,1 +1,1 @@
-# Tarea_1_Econometria
+# Tarea_2_Econometria

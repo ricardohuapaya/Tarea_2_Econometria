@@ -16,6 +16,8 @@ library(ggplot2)
 library(readxl)
 library(dplyr)
 library(stargazer)
+library(normtest)
+library(skedastic)
 
 setwd("C:/Users/FamiliaFeliz/Documents/GitHub/Tarea_1_Econometria")
 
@@ -166,7 +168,41 @@ La prueba F conjunta nos devuelve un P-value que tiende a 0, entonces con un niv
 Interpretando la prueba F de significancia conjunta del modelo con la función summary donde la Ho: B´s(en conjunto)= 0 se puede afirmar que 
 los coeficientes de las variables explicativas no son 0 ya que el p-value asociado a la prueba es practicamente 0.
 
-### 2.4 
+### 2.4 Pruebas 
+Prueba de normalidad Jarque-Bera para observar si existe normalidad de los residuos 
+```{r, include=FALSE}
+residuos_linear.energy<-resid(linear.energy)
+
+```
+
+```{r, echo=FALSE }
+jb.norm.test(residuos_linear.energy)
+hist(residuos_linear.energy)
+```
+
+A partir del histograma de los residuos de la regresión y el estadístico JB se puede observar que los residuos no se distribuyen normalmente, el p-value asociado a la prueba tiende a 0 por lo que se rechaza la Ho de que los residuos se distribuyen normalmente.
+
+
+Prueba de heterocedasticidad de White para observar si existe homocedasticidad de los términos de error $u_{i}$
+
+```{r, echo=FALSE}
+white_lm(linear.energy, interactions = FALSE)
+```
+
+A partir de la prueba de White sin terminos cruzados se obtiene un p-value que tiende a 0 por lo que se rechaza la $H_{0}$ y si existe evidencia de heterocedasticidad
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

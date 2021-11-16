@@ -17,7 +17,7 @@ library(readxl)
 library(dplyr)
 library(stargazer)
 
-setwd("~/Tarea_2_Econometria")
+setwd("C:/Users/FamiliaFeliz/Documents/GitHub/Tarea_1_Econometria")
 
 cigs = read_excel("Data/CigarettesB.xlsx")
 

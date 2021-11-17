@@ -192,6 +192,19 @@ white_lm(linear.energy, interactions = FALSE)
 A partir de la prueba de White sin terminos cruzados se obtiene un p-value que tiende a 0 por lo que se rechaza la $H_{0}$ y si existe evidencia de heterocedasticidad
 
 
+Prueba de multicolinealidad 
+```{r, echo=FALSE}
+linear.energy <- lm( Costo ~ Produccion + Trabajo + Capital + Combustible, data= datos_reg, singular.ok = FALSE)
+summary(linear.energy)
+```
+
+
+
+
+
+
+
+
 
 
 

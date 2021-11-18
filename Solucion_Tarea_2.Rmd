@@ -18,6 +18,7 @@ library(dplyr)
 library(stargazer)
 library(normtest)
 library(skedastic)
+library(car)
 
 setwd("C:/Users/FamiliaFeliz/Documents/GitHub/Tarea_1_Econometria")
 
@@ -194,14 +195,26 @@ A partir de la prueba de White sin terminos cruzados se obtiene un p-value que t
 
 Prueba de multicolinealidad 
 ```{r, echo=FALSE}
-linear.energy <- lm( Costo ~ Produccion + Trabajo + Capital + Combustible, data= datos_reg, singular.ok = FALSE)
+linear.energy <- lm( Costo ~ Produccion + Trabajo + Capital + Combustible, data= datos_reg)
 summary(linear.energy)
 ```
+No hay evidencia de singularidades, por lo tanto no existe multicolinealidad perfecta
 
 
+```{r, echo=FALSE}
+cor(datos_reg$Costo, datos_reg$Produccion ,method="pearson")
+cor(datos_reg$Costo, datos_reg$Trabajo ,method="pearson")
+cor(datos_reg$Costo, datos_reg$Capital ,method="pearson")
+cor(datos_reg$Costo, datos_reg$Combustible ,method="pearson")
 
 
+```
 
+```{r, echo=FALSE}
+durbinWatsonTest(linear.energy)
+
+```
+Se rechaza Ho entonces existe autocorrelación
 
 
 

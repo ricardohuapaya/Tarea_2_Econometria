@@ -137,7 +137,7 @@ stargazer(white.cigs, type ="text",title = "Cuadro #2: Prueba de Heterocedastida
 
 ```
 
-Observando los resultados de la prueba se obtiene que con un nivel de significancia del 5%, se tiene un p-value de 0.004 por lo que Rechazamos la hipotesis nula y confirmamos que sí existe la presencia de heterocedasticidad en el modelo.
+Observando los resultados de la prueba se obtiene que con un nivel de significancia del 5%, se tiene un p-value de 0.008 por lo que Rechazamos la hipotesis nula y confirmamos que sí existe la presencia de heterocedasticidad en el modelo.
 
 #### Prueba de Haussman
 

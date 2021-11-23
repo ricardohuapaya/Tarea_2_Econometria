@@ -50,12 +50,12 @@ Para ello se selecionaron las bases:
 
 La estructura del documento es de un análisis individual en el orden mencionado previamente.
 Para así al final discutir en una última sección las conclusiones de cada análisis.
-El codigo del codigo se encuentra en el siguiente [repositorio](https://github.com/ricardohuapaya/Tarea_1_Econometria).
+El código del código se encuentra en el siguiente [repositorio](https://github.com/ricardohuapaya/Tarea_1_Econometria).
 
 ## 1. Análisis Cigarettes Data
 
 Para la base de datos 2.2 tomaremos la variable `PACKS` como nuestra variable dependiente que será analizada.
-Esta variable representa el número de paquetes consumidos por personas mayores de 16 años en casa Estado; así nuestro modelo propuesto para el primer análisis sería de la forma:
+Esta variable representa el número de paquetes consumidos por personas mayores de 16 años en cada Estado; así nuestro modelo propuesto para el primer análisis sería de la forma:
 
 $$
 ln(PACKS) = \beta_{0}+\beta_{1}ln(price)+\beta_{2}income+\mu
@@ -82,16 +82,16 @@ coef = coefficients(linear.cigs)
 
 Utilizando la misma función que en la sección anterior, y con el cuadro 1 se obtiene la información necesaria para obtener los resultados de la prueba $t$.
 
-Tomando $H_{0}: \beta_{1}=0$ (Precio no tiene efecto en consumo) La prueba $t$ realizada para el precio nos devuelve un P-value de 0.000168, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el precio del paquete no afecta el consumo.
+Tomando $H_{0}: \beta_{1}=0$ (Precio no tiene efecto en consumo) La prueba $t$ realizada para el precio nos devuelve un P-value de 0.000168, entonces con un nivel de significancia del 5% podemos rechazar la hipótesis nula donde el precio del paquete no afecta el consumo.
 
-Tomando $H_{0}: \beta_{2}=0$ (Ingreso no tiene efecto en consumo) La prueba t realizada para el ingreso nos devuelve un P-Value de 0.386 el cual, entonces con un nivel de significancia del 5% podemos no podemos rechazar la hipotesis nula donde el precio del paquete no afecta el consumo.
+Tomando $H_{0}: \beta_{2}=0$ (Ingreso no tiene efecto en consumo) La prueba t realizada para el ingreso nos devuelve un P-Value de 0.386 el cual, entonces con un nivel de significancia del 5% podemos no podemos rechazar la hipótesis nula donde el precio del paquete no afecta el consumo.
 
 ### 1.3 Pruebas F
 
 Utilizando la misma función que en la pregunta anterior, y con el cuadro 1 se obtiene la información necesaria para obtener los resultados de la prueba $f$.
 
-Tomando una prueba de significancia conjunta tal que nuestra hipotesis nula sea; $H_{0}: \beta_{1}= \beta_{2}=0$.
-La prueba $f$ conjunta nos devuelve un P-value de 0.0004168, entonces con un nivel de significancia del 5% se rechaza la hipotesis nula conjunta de que el precio y el ingreso no afectan el consumo.
+Tomando una prueba de significancia conjunta tal que nuestra hipótesis nula sea; $H_{0}: \beta_{1}= \beta_{2}=0$.
+La prueba $f$ conjunta nos devuelve un P-value de 0.0004168, entonces con un nivel de significancia del 5% se rechaza la hipótesis nula conjunta de que el precio y el ingreso no afectan el consumo.
 
 ### 1.4 Prubas Generales Evaluación de Supuestos MCRL
 
@@ -100,14 +100,14 @@ Para esta sección procedemos a analizar los resultados de la secciones 1.1-1.3,
 #### Jarque-Bera
 
 Considere la prueba de normalidad Jarque-Bera, para ello podemos observar inicialmente la distribución de los residuos de nuestra regresión `linear.cigs`.
-Note que empiricamente, aparenta tener una distribución normal.
+Note que empíricamente, aparenta tener una distribución normal.
 
 ```{r Historgram, echo=FALSE, message=TRUE}
 
 hist(residuals(linear.cigs))
 ```
 
-Con esta información podemos correr la prueba de Jarque-Bera, para ello parta de la siguiente hipotesis nula donde,
+Con esta información podemos correr la prueba de Jarque-Bera, para ello parta de la siguiente hipótesis nula donde,
 
 $$
 H_{0}: JB\sim \overline{\chi^{2}}_{2 \, g.l.}
@@ -118,13 +118,13 @@ $$
 jarque.bera.test(residuals(linear.cigs))
 ```
 
-El codigo nos da un resultado de con el p-value de 0.86, por lo que con un nivel de significancia del 5% no podemos rechazar $H_{0}$.
+El código nos da un resultado de con el p-value de 0.86, por lo que con un nivel de significancia del 5% no podemos rechazar $H_{0}$.
 Por ello concluimos que los residuos se distribuyen de forma normal.
 
 #### Prueba de Heterocedasticidad (White)
 
 Considere ahora una prueba de Heterocedasticidad, en este caso al ser dos variables explicativas se puede aplicar la regresión la prueba de White con **interacciones**.
-Para ello la hipotesis nula se especifica como,
+Para ello la hipótesis nula se especifica como,
 
 $$
 H_{0}: \nexists \, Heterocedasticidad
@@ -139,19 +139,19 @@ stargazer(white.cigs, type ="text",title = "Cuadro #1.2: Prueba de Heterocedasti
 
 ```
 
-Observando los resultados de la prueba se obtiene que con un nivel de significancia del 5%, se tiene un p-value de 0.008 por lo que Rechazamos la hipotesis nula y confirmamos que sí existe la presencia de heterocedasticidad en el modelo.
+Observando los resultados de la prueba se obtiene que con un nivel de significancia del 5%, se tiene un p-value de 0.008 por lo que Rechazamos la hipótesis nula y confirmamos que sí existe la presencia de heterocedasticidad en el modelo.
 
 #### Prueba de Multicolinealidad
 
-Inicialmente considere dentro de nuestra correlación si ha de existir un problema de multicolinealidad perfecta, corremos un codigo en el modelo para observar si este detecta algun error.
+Inicialmente considere dentro de nuestra correlación si ha de existir un problema de multicolinealidad perfecta, corremos un código en el modelo para observar si este detecta algun error.
 
 ```{r}
 linear.cigs <-lm(PACKS ~ price+income, data=cigs, singular.ok = FALSE)
 ```
 
 Note que por el momento no tenemos un problema de multicolinealidad perfecta.
-Sin embargo, es necesario realizar un analisis más de este.
-Considere un analisis de multicolinealidad, para ello considere los siguientes factores, la $R^{2}$ a un nivel de, vista en el Cuadro \#1; y la matriz de correlaciones entre variables explicativas.
+Sin embargo, es necesario realizar un análisis más de este.
+Considere un análisis de multicolinealidad, para ello considere los siguientes factores, la $R^{2}$ a un nivel de, vista en el Cuadro \#1; y la matriz de correlaciones entre variables explicativas.
 
 ```{r, echo=TRUE}
 
@@ -162,10 +162,10 @@ cor(cigs$income, cigs$PACKS, method="pearson")
 
 ```
 
-Visto los resultados de la matriz, vemos que si existe alta correlación entre varias variables, sin embargo, nada mayor a 8.
-Por ellos ahora usaremos el analisis del indice K.
+Visto los resultados de la matriz, vemos que sí existe alta correlación entre varias variables, sin embargo, nada mayor a 8.
+Por ellos ahora usaremos el análisis del indice K.
 
-Procedemos en analsis del indice K donde sabemos que,
+Procedemos en análsis del indice K donde sabemos que,
 
 $$
 K= \frac{\max_{valor \, propio}X'X}{\min_{valor \, propio}X'X}
@@ -196,7 +196,7 @@ indice_condicion_k<-sqrt(max(valores_propios$values))/sqrt(min(valores_propios$v
 indice_condicion_k
 ```
 
-El Indice K nos da un númeri superior a 30, por lo que se tiene un problema serio de multicolinealidad.
+El Indice K nos da un número superior a 30, por lo que se tiene un problema serio de multicolinealidad.
 
 #### Prueba de Autocorrelación (Durbin y Watson)
 
@@ -225,7 +225,7 @@ $$
 d_{L} = 1.48 \, \& \, d_{U} = 1.56 
 $$
 
-Como nuestro estadistico nos dio 2.32, note que $2.32 < (4-1.56 )$, asi entonces no se puede rechazar la hipotesis nula y concluimos que no hay presencia de autocorrelación.
+Como nuestro estadistico nos dio 2.32, note que $2.32 < (4-1.56 )$, asi entonces no se puede rechazar la hipótesis nula y concluimos que no hay presencia de autocorrelación.
 
 ### 1.5 Corrección a las Pruebas
 
@@ -234,8 +234,8 @@ La principal medida que vamos a aplicar es la eliminación de la variable 'Incom
 ln(PACKS) = \beta_{0}+\beta_{1}price+\mu
 $$
 
-A pesar de que el ingreso es una variable que pueda explicarnos a cierto nivel la demanda por cigarillos, en este caso no es estadisticamente significativo y solo nos genera suciedad en la regresión.
-Adicionalmente, en un sentido economico, la demanda de los cigarillos no tienden a ser influeciados por el ingreso que los individuos tienen, por su naturaleza son un bien "necesario" que se cosume irrelevantemente del ingreso de las personas.
+A pesar de que el ingreso es una variable que pueda explicarnos a cierto nivel la demanda por cigarillos, en este caso no es estadísticamente significativo y sólo nos genera suciedad en la regresión.
+Adicionalmente, en un sentido económico, la demanda de los cigarillos no tienden a ser influenciados por el ingreso que los individuos tienen, por su naturaleza son un bien "necesario" que se consume irrelevantemente del ingreso de las personas.
 
 Nuestra nueva regresión quedaría de la la forma.
 
@@ -245,7 +245,7 @@ linear.cigs.corr <-lm(PACKS ~ price, data=cigs)
 
 #### Multicolinealidad
 
-Por definicion una regresión simple no puede tener multicolinealidad, ya que no hay otras variables con las cuales "Price" pueda tener alguna asociacion lineal con, el remover la variable de Income nos soluciona el problema de multicolinealidad.
+Por definición una regresión simple no puede tener multicolinealidad, ya que no hay otras variables con las cuales "Price" pueda tener alguna asociacion lineal con, el remover la variable de Income nos soluciona el problema de multicolinealidad.
 
 #### Heteroscedasticidad
 
@@ -257,7 +257,7 @@ whitecig2=as.data.frame(white_lm(linear.cigs.corr))
 stargazer(whitecig2, type ="text", title = "Cuadro #2.1: Prueba de Heterocedastidad", summary = FALSE)
 ```
 
-Observando el resultado se obtiene que con un nivel de significancia de 5% una vez no se rechaza la hipotesis nula, confirmando que existe no heteroscedasticidad en el modelo corregido.
+Observando el resultado se obtiene que con un nivel de significancia de 5% una vez no se rechaza la hipótesis nula, confirmando que existe no heteroscedasticidad en el modelo corregido.
 
 ### 1.6 Comparación
 
@@ -280,7 +280,7 @@ $$
 
 ### 2.1 Regresión Lineal
 
-Con el fin de analizar la regresión lineal de nuestras variables, utilizaremos el siguiente codigo:
+Con el fin de analizar la regresión lineal de nuestras variables, utilizaremos el siguiente código:
 
 ```{r, warning = FALSE}
 linear.energy <- lm( Costo ~ + Trabajo + Capital + Combustible, data= datos_reg)
@@ -291,7 +291,7 @@ stargazer(linear.energy, type = "text", title = "Cuadro #2.1: Resultados Regresi
 coef2 = coefficients(linear.energy)
 ```
 
-Con todo lo demas constante se pueden realizar las siguientes interpretacions de los coeficientes.
+Con todo lo demás constante se pueden realizar las siguientes interpretaciones de los coeficientes.
 
 Para el $\beta_{1}$ se interpreta como la elasticidad del costo a producción, si la producción incrementa en 1% se espera que los costos aumenten en 0.84%.
 
@@ -302,19 +302,19 @@ Para el $\beta_{4}$ se interpreta como la semielasticidad del costo respecto al 
 ### 2.2 Pruebas t
 
 Utilizando la misma función que en la pregunta anterior, y con el cuadro 2 se obtiene la información necesaria para obtener los resultados de la prueba $t$.
-Tomando $H_{0}: \beta_{1}=0$ (Producción no tiene efecto en los Costos) La prueba $t$ realizada para la producción nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde la producción no afecta los costos.
+Tomando $H_{0}: \beta_{1}=0$ (Producción no tiene efecto en los Costos) La prueba $t$ realizada para la producción nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% podemos rechazar la hipótesis nula donde la producción no afecta los costos.
 
-Tomando $H_{0}: \beta_{2}=0$ (Trabajo no tiene efecto en los Costos) La prueba $t$ realizada para la producción nos devuelve un P-value de 0.7515, entonces no se se puede rechazar la hipotesis nula, por lo tanto el trabajo no tiene efecto sobre los costos.
+Tomando $H_{0}: \beta_{2}=0$ (Trabajo no tiene efecto en los Costos) La prueba $t$ realizada para la producción nos devuelve un P-value de 0.7515, entonces no se se puede rechazar la hipótesis nula, por lo tanto el trabajo no tiene efecto sobre los costos.
 
-Tomando $H_{0}: \beta_{3}=0$ (Capital no tiene efecto en los Costos) La prueba $t$ realizada para la producción nos devuelve un P-value de 0.0496, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el capital no afecta los costos.
+Tomando $H_{0}: \beta_{3}=0$ (Capital no tiene efecto en los Costos) La prueba $t$ realizada para la producción nos devuelve un P-value de 0.0496, entonces con un nivel de significancia del 5% podemos rechazar la hipótesis nula donde el capital no afecta los costos.
 
-Tomando $H_{0}: \beta_{4}=0$ (Combustible no tiene efecto en los Costos) La prueba $t$ realizada para la producción nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde la producción no afecta los costos.
+Tomando $H_{0}: \beta_{4}=0$ (Combustible no tiene efecto en los Costos) La prueba $t$ realizada para la producción nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% podemos rechazar la hipótesis nula donde la producción no afecta los costos.
 
 ### 2.3 Prueba F
 
 Utilizando la misma función que en la pregunta anterior, y con el cuadro 2 se obtiene la información necesaria para obtener los resultados de la prueba F.
-Tomando una prueba de significancia conjunta tal que nuestra hipotesis nula sea; $H_{0}: \beta_{1}= \beta_{2}=\beta_{3}= \beta_{4}=0$.
-La prueba F conjunta nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% se rechaza la hipotesis nula conjunta de que los B´s no afectan los costos.
+Tomando una prueba de significancia conjunta tal que nuestra hipótesis nula sea; $H_{0}: \beta_{1}= \beta_{2}=\beta_{3}= \beta_{4}=0$.
+La prueba F conjunta nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% se rechaza la hipótesis nula conjunta de que los B´s no afectan los costos.
 
 Interpretando la prueba F de significancia conjunta del modelo con la función summary donde la Ho: B´s(en conjunto)= 0 se puede afirmar que los coeficientes de las variables explicativas no son 0 ya que el p-value asociado a la prueba es practicamente 0.
 
@@ -325,7 +325,7 @@ Para esta sección procedemos a analizar los resultados de la secciones 2.1-2.3,
 #### Jarque-Bera
 
 Considere la prueba de normalidad Jarque-Bera, para ello podemos observar inicialmente la distribución de los residuos de nuestra regresión `linear.enerfy`.
-Note que empiricamente, no aparenta tener una distribución normal.
+Note que empíricamente, no aparenta tener una distribución normal.
 
 ```{r Historgram 2, echo=FALSE, message=TRUE}
 
@@ -343,13 +343,13 @@ $$
 jarque.bera.test(residuals(linear.energy))
 ```
 
-El codigo nos da un resultado de con el p-value que tiende a 0, por lo que con un nivel de significancia del 5% podemos rechazar $H_{0}$.
+El código nos da un resultado de con el p-value que tiende a 0, por lo que con un nivel de significancia del 5% podemos rechazar $H_{0}$.
 Por ello concluimos que los residuos no se distribuyen de forma normal.
 
 #### Prueba de Heterocedasticidad (White)
 
 Considere ahora una prueba de Heterocedasticidad, en este caso al ser más de dos variables explicativas se debería aplicar la regresión la prueba de White sin **terminos cruzados**.
-Para ello la hipotesis nula se especifica como,
+Para ello la hipótesis nula se especifica como,
 
 $$
 H_{0}: \nexists \, Heterocedasticidad
@@ -389,9 +389,9 @@ cor(datos_reg$Produccion, datos_reg$Costo ,method="pearson")
 
 ```
 
-Visto los resultados de la matriz, vemos que si existe naja correlación entre varias variablesPor ellos ahora usaremos el analisis del indice K.
+Visto los resultados de la matriz, vemos que sí existe una correlación entre varias variables. Por ello, ahora usaremos el análisis del indice K.
 
-Procedemos en analsis del indice K donde sabemos que,
+Procedemos en análisis del indice K donde sabemos que,
 
 $$
 K= \frac{\max_{valor \, propio}X'X}{\min_{valor \, propio}X'X}
@@ -451,18 +451,18 @@ $$
 d_{L} = 1.70 \, \& \, d_{U} = 1.78
 $$
 
-Como nuestro estadistico nos dio 1.45, note que $1.45 < 1.70 )$, asi entonces se puede rechazar la hipotesis nula y concluimos que hay presencia de autocorrelación.
+Como nuestro estadistico nos dio 1.45, note que $1.45 < 1.70 )$, asi entonces se puede rechazar la hipótesis nula y concluimos que hay presencia de autocorrelación.
 
 ### 2.5 Corrección a las Pruebas
 
-Se procede a realizar la correción del modelo enfocandonos en disminuir la heterocedasticidad.
-Para ellos tomamos la el metodo de Minimos Cuadrados Ponderados.
+Se procede a realizar la correción del modelo enfocándonos en disminuir la heterocedasticidad.
+Para ellos tomamos la el metodo de Mínimos Cuadrados Ponderados.
 
 ```{r}
 
-datos_reg$u2 <- abs(residuals(linear.energy))
+datos_reg$h <- fitted.values(linear.energy)
 
-linear.energy.corre <- lm( Costo ~ Produccion+ Trabajo + Capital + Combustible , data= datos_reg, weight=u2)
+linear.energy.corre <- lm( Costo ~ Produccion+ Trabajo + Capital + Combustible , data = datos_reg, weight=h)
 
 
 summary(linear.energy.corre)
@@ -492,7 +492,7 @@ X <- as.matrix(cbind(datos_reg$Produccion, datos_reg$Trabajo, datos_reg$Capital,
 
 X_prima_X <- t(X)%*%X
 
-#Se obtienen los valores propis de la matriz X'X con la función eigen (base de R), se usa la opción only.values = TRUE para que solo brinde los valores propios y no sus vectores asociados
+#Se obtienen los valores propios de la matriz X'X con la función eigen (base de R), se usa la opción only.values = TRUE para que solo brinde los valores propios y no sus vectores asociados
 valores_propios<-eigen(X_prima_X, only.values = TRUE)
 
 #Se computa el índice de condición K
@@ -504,8 +504,11 @@ indice_condicion_k
 
 ```
 
-A modo de comparación el modelo corregido presenta residuos que se distribuyen de manera normal ya que presenta un p-value de 0.4 por lo que no se rechaza la Ho, caso contrario al modelo original donde hay evidencia estadistica de residuos no normalizados En cuanto a la heterocedasticidad el p-value asociado al modelo corregido aumenta a 0.02 por lo que con un nivel de significancia del 1% no rechazamos Ho donde es que no exista heterocedasticidad; sin embargo no es algo con lo que estemos tranquilos pero lo consideramos aceptable en términos del problema y de la estructura que presentan los datos\
-Por último el problema de multicolinealidad no se corrige con el nuevo modelo; sin embargo desde un punto económico y en terminos de los datos de la regresión se espera que exista una multicolinealidad fuerte entre estas variables explicativas; es esperable que la produccion, trabajo, capital, combustible mantengan una relación lineal que si no es perfecta al menos exista y nos genere ruido en la regresión.
+A modo de comparación el modelo corregido presenta residuos que se distribuyen de manera normal ya que presenta un p-value de 0.4 por lo que no se rechaza la Ho, caso contrario al modelo original donde hay evidencia estadistica de residuos no normalizados. 
+
+En cuanto a la heterocedasticidad la nueva regresión no soluciona el problema. Lo que nos indica que, para solucionarlo, tendríamos que quitar de la regresión la variable producción. 
+
+Por último el problema de multicolinealidad no se corrige con el nuevo modelo; sin embargo desde un punto económico y en términos de los datos de la regresión se espera que exista una multicolinealidad fuerte entre estas variables explicativas; es esperable que la produccion, trabajo, capital, combustible mantengan una relación lineal que si no es perfecta al menos exista y nos genere ruido en la regresión.
 
 ## 3. Análisis Housing Data
 
@@ -519,7 +522,7 @@ $$
 
 ### 3.1 Regresión Lineal
 
-Con el fin de analizar la regresión lineal de nuestras variables, utilizaremos el siguiente codigo:
+Con el fin de analizar la regresión lineal de nuestras variables, utilizaremos el siguiente código:
 
 ```{r, warning = FALSE}
 linear.house <- lm( PRICE ~ lotsize + bedrooms + bathrooms, data= house)
@@ -530,7 +533,7 @@ stargazer(linear.house, type = "text", title = "Cuadro #3.1: Resultados Regresi�
 
 ```
 
-Con todo lo demás constante se pueden realizar las siguientes interpretacions de los coeficientes.
+Con todo lo demás constante se pueden realizar las siguientes interpretaciones de los coeficientes.
 
 Para el $\beta_{0}$ (el intercepto), se interpreta como el precio que existe al ser las variables explicativas iguales a cero.
 Se observa que, el precio es negativo cuando las variables explicativas son cero.
@@ -551,46 +554,46 @@ Es decir (comparándolo con las habitaciones), es más caro un baño adicional q
 Utilizando la misma función que en la pregunta anterior, y con el cuadro 5 se obtiene la información necesaria para obtener los resultados de la prueba $t$.
 
 Tomando $H_{0}: \beta_{0}=0$ (El intercepto es nulo) La prueba $t$ realizada para el intercepto, nos devuelve un P-value que es aproximadamente, 0.523.
-Entonces con un nivel de significancia del 5% podemos no rechazar la hipotesis nula donde el intercepto no afecta los precios, puesto que el P-value es mayor que el nivel de tolerancia a cometer el error tipo I.
+Entonces con un nivel de significancia del 5% podemos no rechazar la hipótesis nula donde el intercepto no afecta los precios, puesto que el P-value es mayor que el nivel de tolerancia a cometer el error tipo I.
 Esto confirma la intuición del inciso pasado, en el que se decía que, no tendría mucho sentido que eso fuese cierto (que el precio de las casas fuesen negativos)
 
 Tomando $H_{0}: \beta_{1}=0$ (El tamaño del lote no tiene efecto sobre el precio de las casas) La prueba $t$ realizada para el tamaño de los lotes nos devuelve un P-value muy cercano a cero.
-Entonces se puede rechazar la hipotesis nula.
+Entonces se puede rechazar la hipótesis nula.
 Es decir, el tamaño del lote sí tiene un efecto sobre el precio de las casas.
 
 Tomando $H_{0}: \beta_{2}=0$ (El número de habitaciones no tiene un efecto en el precio de las casas).
 La prueba $t$ realizada para el número de habitaciones nos devuelve un P-value cercano a cero.
-Entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el número de habitaciones no afectan los precios de las casas.
+Entonces con un nivel de significancia del 5% podemos rechazar la hipótesis nula donde el número de habitaciones no afectan los precios de las casas.
 Es decir, el número de habitaciones sí afecta al precio de las casas.
 
 Tomando $H_{0}: \beta_{3}=0$ (Número de baños no tiene efecto en los precios) La prueba $t$ realizada para el número de baños nos devuelve un P-value que tiende a 0.
-Entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el número de baños no afecta los precios de las casas.
+Entonces con un nivel de significancia del 5% podemos rechazar la hipótesis nula donde el número de baños no afecta los precios de las casas.
 
 ### 3.3 Prueba F
 
 Utilizando los datos de la regresión incluidos el cuadro 5 se obtiene la información necesaria para obtener los resultados de la prueba F.
-Tomando una prueba de significancia conjunta tal que nuestra hipotesis nula sea; $H_{0}: \beta_{0}= \beta_{1}=\beta_{2}= \beta_{3}=0$.
+Tomando una prueba de significancia conjunta tal que nuestra hipótesis nula sea; $H_{0}: \beta_{0}= \beta_{1}=\beta_{2}= \beta_{3}=0$.
 
 La prueba F conjunta nos devuelve un P-value que tiende a 0.
-Entonces dado lo anterior y con un nivel de significancia del 5% se rechaza la hipotesis nula de que los Betas de forma conjunta no afectan los precios de las casas.
+Entonces dado lo anterior y con un nivel de significancia del 5% se rechaza la hipótesis nula de que los Betas de forma conjunta no afectan los precios de las casas.
 
 Más claro: interpretando la prueba F de significancia conjunta del modelo con la función summary donde la Ho: Betas (en conjunto) = 0, se puede afirmar que los coeficientes de las variables explicativas no son cero, ya que el p-value asociado a la prueba es practicamente cero.
 
-### 3.4 Prubas Generales Evaluación de Supuestos MCRL
+### 3.4 Pruebas Generales Evaluación de Supuestos MCRL
 
 Para esta sección procedemos a analizar los resultados de la secciones 3.1-3.3, para ello consideraremos los resultados y en la siguiente sección procederemos a intentar corregir los efectos mostrados o justificar las acciones pasivas frente a ellos.
 
 #### Jarque-Bera
 
 Considere la prueba de normalidad Jarque-Bera, para ello podemos observar inicialmente la distribución de los residuos de nuestra regresión `linear.house`.
-Note que empiricamente, no aparenta tener una distribución normal.
+Note que empíricamente, no aparenta tener una distribución normal.
 
 ```{r Historgram 3, echo=FALSE, message=TRUE}
 
 hist(residuals(linear.house)/50000)
 ```
 
-Con esta información podemos correr la prueba de Jarque-Bera, para ello parta de la siguiente hipotesis nula donde,
+Con esta información podemos correr la prueba de Jarque-Bera, para ello parta de la siguiente hipótesis nula donde,
 
 $$
 H_{0}: JB\sim \overline{\chi^{2}}_{2 \, g.l.}
@@ -606,8 +609,8 @@ Por ello concluimos que los residuos no se distribuyen de forma normal.
 
 #### Prueba de Heterocedasticidad (White)
 
-Considere ahora una prueba de Heterocedasticidad, en este caso al ser más de dos variables explicativas se debería aplicar la regresión la prueba de White sin **terminos cruzados**.
-Para ello la hipotesis nula se especifica como,
+Considere ahora una prueba de Heterocedasticidad, en este caso al ser más de dos variables explicativas se debería aplicar la regresión la prueba de White sin **términos cruzados**.
+Para ello la hipótesis nula se especifica como,
 
 $$
 H_{0}: \nexists \, Heterocedasticidad
@@ -623,7 +626,7 @@ stargazer(white.house, type ="text",title = "Cuadro #3.2: Prueba de Heterocedast
 white.house
 ```
 
-Observando los resultados de la prueba se obtiene que con un nivel de significancia del 5%, a partir de la prueba de White sin terminos cruzados se obtiene un p-value que tiende a 0 por lo que se rechaza la $H_{0}$ y se confirma la evidencia de heterocedasticidad.
+Observando los resultados de la prueba se obtiene que con un nivel de significancia del 5%, a partir de la prueba de White sin términos cruzados se obtiene un p-value que tiende a 0 por lo que se rechaza la $H_{0}$ y se confirma la evidencia de heterocedasticidad.
 
 #### Prueba de Multicolinealidad
 
@@ -815,5 +818,5 @@ stargazer(linear.house, linear.house.corr, type = "text", title = "Cuadro: Compa
 
 Y, ahora, gracias a las transformaciones que se le aplicaron a las variables explicativas y dependiente, se logra corregir las violaciones a los supuestos.
 En el caso de la multicolinealidad, si bien no se elimina por completo, se logra disminuir la dependencia entre las variables explicativas.
-La cual en este caso se justifica ya que la relación de baños, habitaciones y metros cuadrados de las casa esta siempre relacionado.
-Ya que entre estas mismas se restringen porque uno no puedo construir muchos cuartos en espacios pequeños y no tiene sentido tener muchos baños para pocas habitaciones.
+La cual, en este caso se justifica, ya que la relación de baños, habitaciones y metros cuadrados de las casa esta siempre relacionado.
+Ya que entre estas mismas se restringen porque uno no puede construir muchos cuartos en espacios pequeños y no tiene sentido tener muchos baños para pocas habitaciones.

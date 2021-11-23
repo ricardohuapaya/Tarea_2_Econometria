@@ -229,7 +229,42 @@ Como nuestro estadistico nos dio 2.32, note que $2.32 < (4-1.56 )$, asi entonces
 
 ### 1.5 Corrección a las Pruebas
 
+Dado que nuestro modelo sufre de un problema moderado de multicolinealidad y un problema de heteroscedasticidad entre sus residuos, aplicamos ciertas medidas para corregir estos problemas.
+La principal medida que vamos a aplicar es la eliminación de la variable 'Income' y convertir la regresión en una regresión simple de la forma:
+$$
+ln(PACKS) = \beta_{0}+\beta_{1}income+\mu
+$$
+
+A pesar de que el ingreso es una variable que pueda explicarnos a cierto nivel la demanda por cigarillos, en este caso no es estadisticamente significativo y solo nos genera suciedad en la regresión. Adicionalmente en un sentido economico, la demanda de los cigarillos no tienden a ser influeciados por el ingreso que los individuos tienen, por su naturaleza son un bien "necesario" que se cosume irrelevantemente del ingreso de las personas.
+
+```{r, warning = FALSE}
+linear.cigs.corr <-lm(PACKS ~ income, data=cigs)
+```
+
+#### Multicolinealidad
+Por definicion una regresión simple no puede tener multicolinealidad, ya que no hay otras variables con las cuales "Price" pueda tener alguna asociacion lineal con, el remover la variable de Income nos soluciona el problema de multicolinealidad.
+
+#### Heteroscedasticidad
+
+El cambio en la regresión resulta en un incremento enorme en la dispercion de las perturbaciones estocasticas de nuestra regresión.
+```{r, warning = FALSE}
+whitecig2=as.data.frame(white_lm(linear.cigs.corr))
+stargazer(whitecigs2, type ="text",title = "Cuadro #2.1: Prueba de Heterocedastidad", summary = FALSE)
+```
+Observando el resultado se obtiene que con un nivel de significancia de 5%  una vez más se rechaza la hipotesis nula, confirmando que existe heteroscedasticidad en el modelo corregido.
+
+Esto nos dice que en la nueva regresión se observan estimadores insesgados pero que no son los mejores estimadores linealmente independientes y cuyos errores estándar son incorrectos. Utilizamos la correción de White donde el error estándar asociado con el coefficiente de Price, el estadistico t y el pvalue se ven afectados. Sin embargo no cambia de manera significativa el efecto de Price en explicar la regresión.
+
+```{r, warning = FALSE}
+linear.cigs.w=coeftest(linear.cigs.corr,vcov.=vcovHC(linear.cigs.corr,"HC1"))
+```
+
 ### 1.6 Comparación
+
+```{r}
+stargazer(modelo1,linear.cigs.corr,linear.cigs.w,type="text", title="Cuadro #2.2: Original vs Corregidos")
+```
+
 
 ## 2. Análisis Energy Data
 

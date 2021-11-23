@@ -165,7 +165,7 @@ pre code {
 
 <h1 class="title toc-ignore">Solución Tarea 2</h1>
 <h4 class="author"><p>Integrantes: María Fernanda Villalobos Barboza B78304, Ricardo Huapaya Rey B83936, Sebasthián Valverde Martínez B98083, Sebastian Mora Rojas B95205</p></h4>
-<h4 class="date">21 Nov, 2021</h4>
+<h4 class="date">22 Nov, 2021</h4>
 
 </div>
 
@@ -258,7 +258,7 @@ H_{0}: \nexists \, Heterocedasticidad
 ## ------------------------------------------------------
 ## 1  15.656    0.008      5     White&#39;s Test   greater  
 ## ------------------------------------------------------</code></pre>
-<p>Observando los resultados de la prueba se obtiene que con un nivel de significancia del 5%, se tiene un p-value de 0.004 por lo que Rechazamos la hipotesis nula y confirmamos que sí existe la presencia de heterocedasticidad en el modelo.</p>
+<p>Observando los resultados de la prueba se obtiene que con un nivel de significancia del 5%, se tiene un p-value de 0.008 por lo que Rechazamos la hipotesis nula y confirmamos que sí existe la presencia de heterocedasticidad en el modelo.</p>
 </div>
 <div id="prueba-de-haussman" class="section level4">
 <h4>Prueba de Haussman</h4>
@@ -313,7 +313,7 @@ d=\frac{\sum_{t=2}^{T}(\hat{u_{t}}-\hat{u_{t-1}})^{2}}{\sum_{t=1}^{T}\hat{u_{t}^
 H_{0}: d=2 \implies \nexists \, autocorrelación
 \]</span></p>
 <pre><code>##  lag Autocorrelation D-W Statistic p-value
-##    1      -0.1662291      2.315716   0.262
+##    1      -0.1662291      2.315716   0.274
 ##  Alternative hypothesis: rho != 0</code></pre>
 <p>Para este caso con <span class="math inline">\(n=46\)</span> y <span class="math inline">\(k=2\)</span>, tenemos que dentro de nuestro mapa.</p>
 <p><span class="math display">\[
@@ -480,7 +480,7 @@ d=\frac{\sum_{t=2}^{T}(\hat{u_{t}}-\hat{u_{t-1}})^{2}}{\sum_{t=1}^{T}\hat{u_{t}^
 H_{0}: d=2 \implies \nexists \, autocorrelación
 \]</span></p>
 <pre><code>##  lag Autocorrelation D-W Statistic p-value
-##    1       0.1820963      1.522461       0
+##    1       0.1820963      1.522461   0.004
 ##  Alternative hypothesis: rho != 0</code></pre>
 <p>Para este caso con <span class="math inline">\(n=158\)</span> y <span class="math inline">\(k=4\)</span>, tenemos que dentro de nuestro mapa.</p>
 <p><span class="math display">\[

@@ -537,33 +537,37 @@ stargazer(linear.house, type = "text", title = "Cuadro #5: Resultados Regresión
 coef3 = coefficients(linear.house)
 ```
 
-Con todo lo demas constante se pueden realizar las siguientes interpretacions de los coeficientes.
+Con todo lo demás constante se pueden realizar las siguientes interpretacions de los coeficientes.
 
-Para el $\beta_{1}$ se interpreta como la elasticidad del costo a producción, si la producción incrementa en 1% se espera que los costos aumenten en 0.84%.
+Para el $\beta_{0}$ (el intercepto), se interpreta como el precio que existe al ser las variables explicativas iguales a cero. Se observa que, el precio es negativo cuando las variables explicativas son cero. No tiene mucho sentido económico, puesto que no hay casas en venta con precios negativos en el mercado. 
 
-Para el $\beta_{3}$ se interpreta como la elasticidad del costo a capital, si el capital incrementa en 1% se espera que los costos aumenten en 0.18%.
+Para el $\beta_{1}$ se interpreta como el aporte que genera el incremento de un metro cuadrado de la variable "lotsize" al precio de las casas. Se ve que afecta positivamente al precio. 
 
-Para el $\beta_{4}$ se interpreta como la semielasticidad del costo respecto al combustible, si la producción incrementa en un dolar se espera que los costos aumenten en 0.023%
+Para el $\beta_{2}$ se interpreta como el aporte que genera el incremento de una unidad de la variable "bedrooms" (número de habitaciones) al precio de las casas. Igual que el tamaño del lote, afecta positivamente al precio. 
+
+Para el $\beta_{3}$ se interpreta como el aporte que genera el incremento de una unidad de la variable "bathrooms" (número de baños) al precio de las casas. Se ve que, al igual que "lotsize" y "bedrooms" afecta positivamente al precio, pero, el número de baños afecta en una cuantía mayor al precio. Es decir (comparándolo con las habitaciones), es más caro un baño adicional que una habitación adicional.   
+
 
 ### 3.2 Pruebas t
 
 Utilizando la misma función que en la pregunta anterior, y con el cuadro 5 se obtiene la información necesaria para obtener los resultados de la prueba $t$.
 
-Tomando $H_{0}: \beta_{1}=0$ (Producción no tiene efecto en los Costos) La prueba $t$ realizada para la producción nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde la producción no afecta los costos.
+Tomando $H_{0}: \beta_{0}=0$ (El intercepto es nulo) La prueba $t$ realizada para el intercepto, nos devuelve un P-value que es aproximadamente, 0.523. Entonces con un nivel de significancia del 5% podemos no rechazar la hipotesis nula donde el intercepto no afecta los precios, puesto que el P-value es mayor que el nivel de tolerancia a cometer el error tipo I. Esto confirma la intuición del inciso pasado, en el que se decía que, no tendría mucho sentido que eso fuese cierto (que el precio de las casas fuesen negativos)
 
-Tomando $H_{0}: \beta_{2}=0$ (Trabajo no tiene efecto en los Costos) La prueba $t$ realizada para la producción nos devuelve un P-value de 0.7515, entonces no se se puede rechazar la hipotesis nula, por lo tanto el trabajo no tiene efecto sobre los costos.
+Tomando $H_{0}: \beta_{1}=0$ (El tamaño del lote no tiene efecto sobre el precio de las casas) La prueba $t$ realizada para el tamaño de los lotes nos devuelve un P-value muy cercano a cero. Entonces se puede rechazar la hipotesis nula. Es decir, el tamaño del lote sí tiene un efecto sobre el precio de las casas.
 
-Tomando $H_{0}: \beta_{3}=0$ (Capital no tiene efecto en los Costos) La prueba $t$ realizada para la producción nos devuelve un P-value de 0.0496, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el capital no afecta los costos.
+Tomando $H_{0}: \beta_{2}=0$ (El número de habitaciones no tiene un efecto en el precio de las casas). La prueba $t$ realizada para el número de habitaciones nos devuelve un P-value cercano a cero. Entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el número de habitaciones no afectan los precios de las casas. Es decir, el número de habitaciones sí afecta al precio de las casas. 
 
-Tomando $H_{0}: \beta_{4}=0$ (Combustible no tiene efecto en los Costos) La prueba $t$ realizada para la producción nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde la producción no afecta los costos.
+Tomando $H_{0}: \beta_{3}=0$ (Número de baños no tiene efecto en los precios) La prueba $t$ realizada para el número de baños nos devuelve un P-value que tiende a 0. Entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el número de baños no afecta los precios de las casas.
 
 ### 3.3 Prueba F
 
-Utilizando la misma función que en la pregunta anterior, y con el cuadro 2 se obtiene la información necesaria para obtener los resultados de la prueba F.
-Tomando una prueba de significancia conjunta tal que nuestra hipotesis nula sea; $H_{0}: \beta_{1}= \beta_{2}=\beta_{3}= \beta_{4}=0$.
-La prueba F conjunta nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% se rechaza la hipotesis nula conjunta de que los B´s no afectan los costos.
+Utilizando los datos de la regresión incluidos el cuadro 5 se obtiene la información necesaria para obtener los resultados de la prueba F.
+Tomando una prueba de significancia conjunta tal que nuestra hipotesis nula sea; $H_{0}: \beta_{0}= \beta_{1}=\beta_{2}= \beta_{3}=0$.
 
-Interpretando la prueba F de significancia conjunta del modelo con la función summary donde la Ho: B´s(en conjunto)= 0 se puede afirmar que los coeficientes de las variables explicativas no son 0 ya que el p-value asociado a la prueba es practicamente 0.
+La prueba F conjunta nos devuelve un P-value que tiende a 0. Entonces dado lo anterior y con un nivel de significancia del 5% se rechaza la hipotesis nula de que los Betas de forma conjunta no afectan los precios de las casas.
+
+Más claro: interpretando la prueba F de significancia conjunta del modelo con la función summary donde la Ho: Betas (en conjunto) = 0, se puede afirmar que los coeficientes de las variables explicativas no son cero, ya que el p-value asociado a la prueba es practicamente cero.
 
 ### 3.4 Prubas Generales Evaluación de Supuestos MCRL
 
@@ -571,7 +575,7 @@ Para esta sección procedemos a analizar los resultados de la secciones 3.1-3.3,
 
 #### Jarque-Bera
 
-Considere la prueba de normalidad Jarque-Bera, para ello podemos observar inicialmente la distribución de los residuos de nuestra regresión `linear.enerfy`.
+Considere la prueba de normalidad Jarque-Bera, para ello podemos observar inicialmente la distribución de los residuos de nuestra regresión `linear.house`.
 Note que empiricamente, no aparenta tener una distribución normal.
 
 ```{r Historgram 3, echo=FALSE, message=TRUE}
@@ -590,7 +594,7 @@ $$
 jarque.bera.test(residuals(linear.house)/50000)
 ```
 
-El codigo nos da un resultado de con el p-value que tiende a 0, por lo que con un nivel de significancia del 5% podemos rechazar $H_{0}$.
+El código nos da un resultado en el que, el p-value que tiende a 0, por lo que, con un nivel de significancia del 5% podemos rechazar $H_{0}$.
 Por ello concluimos que los residuos no se distribuyen de forma normal.
 
 #### Prueba de Heterocedasticidad (White)
@@ -602,7 +606,7 @@ $$
 H_{0}: \nexists \, Heterocedasticidad
 $$
 
-Corremos la prueba la cual nos da el siguiente resultado,
+Corremos la prueba la cual nos arroja el siguiente resultado,
 
 ```{r White3, echo=FALSE}
 white.house<- as.data.frame(white_lm(linear.house, interactions = FALSE))
@@ -616,15 +620,15 @@ Observando los resultados de la prueba se obtiene que con un nivel de significan
 
 #### Prueba de Multicolinealidad
 
-Inicialmente considere dentro de nuestra correlación si ha de existir un problema de multicolinealidad perfecta, corremos un codigo en el modelo para observar si este detecta algun error.
+Inicialmente considere dentro de nuestra correlación si ha de existir un problema de multicolinealidad perfecta. Corremos un código en el modelo para observar si este detecta algún error.
 
 ```{r, echo=TRUE}
 lm( PRICE ~ lotsize + bedrooms + bathrooms, data= house, singular.ok = FALSE)
 ```
 
 Note que por el momento no tenemos un problema de multicolinealidad perfecta.
-Sin embargo, es necesario realizar un analisis más de este.
-Considere un analisis de multicolinealidad, para ello considere los siguientes factores, la $R^{2}$ a un nivel de 0.98, vista en el Cuadro \#3; y la matriz de correlaciones entre variables explicativas.
+Sin embargo, es necesario realizar un analisis más de éste.
+Considere un análisis de multicolinealidad, para ello considere los siguientes factores, la $R^{2}$ a un nivel de 0.98, vista en el Cuadro \#3; y la matriz de correlaciones entre variables explicativas.
 
 ```{r, echo=TRUE}
 
@@ -635,7 +639,7 @@ cor(x=house$bedrooms, y= house$bathrooms, method = c("pearson"))
 
 ```
 
-Visto los resultados de la matriz, vemos que si existe naja correlación entre varias variablesPor ellos ahora usaremos el analisis del indice K.
+Visto los resultados de la matriz, vemos que sí existe una correlación entre varias variables. Por ello ahora usaremos el analisis del indice K.
 
 Procedemos en analsis del indice K donde sabemos que,
 
@@ -670,6 +674,121 @@ indice_condicion_k
 
 El Indice K nos da un número extremadamente alto, por lo que se tiene un problema muy serio de multicolinealidad.
 
+#### Autocorrelación
+
+Vemos que, al tener datos de corte transversales y muchas observaciones, el problema de autocorrelación no es uno que nos deba molestar. 
+
+
 ### 3.5 Corrección a las Pruebas
 
+Con el fin de remediar la violación de los supuestos, se procede de la siguiente manera. 
+
+1. Se obtiene una nueva variable: la proporción de baños sobre habitaciones. Es probable esperar que, el número va a ser menor o igual que uno, puesto que, normalmente, se tienen más habitaciones que baños. 
+
+2. Se obtiene el logaritmo natural de la proporción anteriormente definida. 
+
+3. Se obtiene el logaritmo natural de los precios. 
+
+4. Obtenemos la raíz cuadrada del tamaño de los lotes. 
+
+Es decir: 
+
+```{r, warning = FALSE}
+house$babed_ratio <- house$bathrooms/house$bedrooms
+house$log_babedratio <- log(house$babed_ratio)
+house$log_PRICE <- log(house$PRICE)
+house$sqrt_lotsize <- sqrt(house$lotsize)
+```
+
+A partir de lo anterior, corremos la siguiente regresión: 
+
+```{r, warning = FALSE}
+linear.house1 <- lm( formula = log_PRICE ~ sqrt_lotsize + log_babedratio, data = house)
+```
+
+```{r, echo=FALSE, warning=FALSE}
+stargazer(linear.house1, type = "text", title = "Cuadro #7: Resultados de la Nueva Regresión")
+coeflin = coefficients(linear.house1)
+```
+#### Corrigiendo la normalidad.
+
+Vemos que, al aplicar la prueba de Jaque-Bera sobre la regresión transformada, se obtiene que: 
+
+```{r Jarque-Bera 3, echo=FALSE}
+jarque.bera.test(residuals(linear.house1)/50000)
+```
+
+Como ahora se obtiene un P-value mayor que un error de tolerancia de 5%, no se rechaza la hipótesis nula. Por lo tanto, podemos no rechazar el hecho de que existe homocedasticidad. 
+
+#### Corrigiendo la heterocedasticidad. 
+
+Si aplicamos la prueba de White sobre la nueva regresión, se obtiene que: 
+
+```{r White3, echo=FALSE}
+white.house1<- as.data.frame(white_lm(linear.house1, interactions = FALSE))
+
+stargazer(white.house1, type ="text",title = "Cuadro #8: Prueba de Heterocedastidad", summary = FALSE)
+
+white.house1
+```
+
+De nuevo, vemos que el nuevo P-value es mayor que el error de tolerancia al 5%, lo que significa que no se rechaza la hipótesis nula. Por lo tanto, existe homocedasticidad. 
+
+#### Corrigiendo la multicolinealidad. 
+
+Aplicando nuevamente las pruebas llevadas a cabo anteriormente, se tiene que: 
+
+Si buscamos la multicolinealidad perfecta de la nueva regresión, no la vamos a encontrar. De acuerdo con el siguiente código: 
+
+```{r, echo=TRUE}
+lm( log_PRICE ~ sqrt_lotsize + log_babedratio, data=house, singular.ok = FALSE)
+```
+
+Se observa que no existe una multicolinealidad perfecta entre ambas variables explicativas. 
+
+Ahora, si analizamos la correlación que existe entre las variables explicativas se tiene que:
+
+```{r, echo=TRUE}
+
+cor(x=house$sqrt_lotsize, y= house$log_babedratio, method = c("pearson"))
+
+```
+
+Vemos que el coeficiente es menor que 0.8, lo que indica que no se tiene un problema grave de multicolinealidad. 
+
+
+Volvemos a utiilzar el análisis de los valores propios, esta vez, utilizamos el siguiente código: 
+
+```{r}
+
+#Se crea la matriz de variables explicativas
+
+X <- as.matrix(cbind(house$sqrt_lotsize, house$log_babedratio))
+
+#Se computa X'X
+
+X_prima_X <- t(X)%*%X
+
+#Se obtienen los valores propis de la matriz X'X con la función eigen (base de R), se usa la opción only.values = TRUE para que solo brinde los valores propios y no sus vectores asociados
+
+valores_propios<-eigen(X_prima_X, only.values = TRUE)
+
+#Se computa el índice de condición K
+
+indice_condicion_k<-sqrt(max(valores_propios$values))/sqrt(min(valores_propios$values))
+
+indice_condicion_k
+```
+
+Ahora, vemos que, el IC sigue siendo mayor que 30, pero, es mucho menor que el IC de la regresión no transformada. 
+
 ### 3.6 Comparación
+
+Al comparar ambas regresiones (la original vs la transformada) podemos observar que, la heterocedasticidad en la original es mayor que en la segunda.  
+
+```{r, warning = FALSE, echo = FALSE}
+stargazer(linear.house, linear.house1, type = "text", title = "Cuadro: Comparación de las Regresiones")
+
+```
+
+Y, ahora, gracias a las transformaciones que se le aplicaron a las variables explicativas y dependiente, se logra corregir las violaciones a los supuestos. En el caso de la multicolinealidad, si bien no se elimina por completo, se logra disminuir la dependencia entre las variables explicativas. 

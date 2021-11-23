@@ -24,8 +24,10 @@ library(normtest)
 library(skedastic)
 library(car)
 library(olsrr)
+library(lmtest)
+library(sandwich)
 
-setwd("~/UCR/Tarea_2_Econometria")
+setwd("C:/Users/FamiliaFeliz/Documents/GitHub/Tarea_1_Econometria")
 
 cigs = read_excel("Data/CigarettesB.xlsx")
 
@@ -453,8 +455,64 @@ $$
 Como nuestro estadistico nos dio 1.55, note que $1.55 < 1.70 )$, asi entonces se puede rechazar la hipotesis nula y concluimos que hay presencia de autocorrelación.
 
 ### 2.5 Corrección a las Pruebas
+Se procede a realizar la correción por heterocedasticidad donde se toma el logaritmo de los residuos al cuadrado de la regresión.
+Luego cada variable explicativa se resta con este componente y se corre la regresión con los nuevos datos
+```{r}
+
+datos_reg$u2 <- log(residuals(linear.energy)^2)
+
+
+datos_reg$Costo_2 <- datos_reg$Costo - (u2)
+datos_reg$Produccion_2 <- datos_reg$Produccion - (u2)
+datos_reg$Trabajo_2 <- datos_reg$Trabajo - (u2)
+datos_reg$Capital_2 <- datos_reg$Capital - (u2)
+datos_reg$Combustible_2 <- datos_reg$Combustible - (u2)
+
+linear.energy.corre <- lm( Costo_2 ~  Produccion_2 + Trabajo_2 + Capital_2 + Combustible_2 , data= datos_reg)
+
+summary(linear.energy.corre)
+```
+Se puede observar a tráves de la función summary que cada variable explicativa es significante ya que los p-values asociados son practicamente 0 a comparación de la regresión original donde el componente del Trabajo no era estadisticamente significativo.
+La prueba F conjunta nos devuelve un P-value que tiende a 0, entonces se sigue rechazando la $H_{0}: \beta_{1}= \beta_{2}=\beta_{3}= \beta_{4}=0$.
+
 
 ### 2.6 Comparación
+```{r}
+jarque.bera.test(residuals(linear.energy.corre))
+hist(residuals(linear.energy.corre))
+
+
+white_lm(linear.energy.corre, interactions = FALSE)
+
+
+
+
+
+#Se crea la matriz de variables explicativas
+
+X <- as.matrix(cbind(datos_reg$Produccion_2, datos_reg$Trabajo_2, datos_reg$Capital_2, datos_reg$Combustible_2))
+
+#Se computa X'X
+
+X_prima_X <- t(X)%*%X
+
+#Se obtienen los valores propis de la matriz X'X con la función eigen (base de R), se usa la opción only.values = TRUE para que solo brinde los valores propios y no sus vectores asociados
+valores_propios<-eigen(X_prima_X, only.values = TRUE)
+
+#Se computa el índice de condición K
+indice_condicion_k<-sqrt(max(valores_propios$values))/sqrt(min(valores_propios$values))
+
+indice_condicion_k
+
+
+
+```
+A modo de comparación el modelo corregido presenta residuos que se distribuyen de manera normal ya que presenta un p-value de 0.4 por lo que no se rechaza la Ho, caso contrario al modelo original donde hay evidencia estadistica de residuos no normalizados 
+En cuanto a la heterocedasticidad el p-value asociado al modelo corregido aumenta a 0.02 por lo que con un nivel de significancia del 1% no rechazamos Ho donde es que no exista heterocedasticidad; sin embargo no es algo con lo que estemos tranquilos pero lo consideramos aceptable en términos del problema y de la estructura que presentan los datos  
+Por último el problema de multicolinealidad no se corrige con el nuevo modelo; sin embargo desde un punto económico y en terminos de los datos de la regresión se espera que exista una multicolinealidad fuerte entre estas variables explicativas; es esperable que la produccion, trabajo, capital, combustible mantengan una relación lineal que si no es perfecta al menos exista y nos genere ruido en la regresión.  
+
+
+
 
 ## 3. Análisis Housing Data
 

@@ -165,7 +165,7 @@ pre code {
 
 <h1 class="title toc-ignore">Solución Tarea 2</h1>
 <h4 class="author"><p>Integrantes: María Fernanda Villalobos Barboza B78304, Ricardo Huapaya Rey B83936, Sebasthián Valverde Martínez B98083, Sebastian Mora Rojas B95205</p></h4>
-<h4 class="date">22 Nov, 2021</h4>
+<h4 class="date">23 Nov, 2021</h4>
 
 </div>
 
@@ -260,9 +260,6 @@ H_{0}: \nexists \, Heterocedasticidad
 ## ------------------------------------------------------</code></pre>
 <p>Observando los resultados de la prueba se obtiene que con un nivel de significancia del 5%, se tiene un p-value de 0.008 por lo que Rechazamos la hipotesis nula y confirmamos que sí existe la presencia de heterocedasticidad en el modelo.</p>
 </div>
-<div id="prueba-de-haussman" class="section level4">
-<h4>Prueba de Haussman</h4>
-</div>
 <div id="prueba-de-multicolinealidad" class="section level4">
 <h4>Prueba de Multicolinealidad</h4>
 <p>Inicialmente considere dentro de nuestra correlación si ha de existir un problema de multicolinealidad perfecta, corremos un codigo en el modelo para observar si este detecta algun error.</p>
@@ -313,7 +310,7 @@ d=\frac{\sum_{t=2}^{T}(\hat{u_{t}}-\hat{u_{t-1}})^{2}}{\sum_{t=1}^{T}\hat{u_{t}^
 H_{0}: d=2 \implies \nexists \, autocorrelación
 \]</span></p>
 <pre><code>##  lag Autocorrelation D-W Statistic p-value
-##    1      -0.1662291      2.315716   0.274
+##    1      -0.1662291      2.315716    0.28
 ##  Alternative hypothesis: rho != 0</code></pre>
 <p>Para este caso con <span class="math inline">\(n=46\)</span> y <span class="math inline">\(k=2\)</span>, tenemos que dentro de nuestro mapa.</p>
 <p><span class="math display">\[
@@ -324,9 +321,63 @@ d_{L} = 1.48 \, \&amp; \, d_{U} = 1.56
 </div>
 <div id="corrección-a-las-pruebas" class="section level3">
 <h3>1.5 Corrección a las Pruebas</h3>
+<p>Dado que nuestro modelo sufre de un problema moderado de multicolinealidad y un problema de heteroscedasticidad entre sus residuos, aplicamos ciertas medidas para corregir estos problemas. La principal medida que vamos a aplicar es la eliminación de la variable ‘Income’ y convertir la regresión en una regresión simple de la forma: <span class="math display">\[
+ln(PACKS) = \beta_{0}+\beta_{1}income+\mu
+\]</span></p>
+<p>A pesar de que el ingreso es una variable que pueda explicarnos a cierto nivel la demanda por cigarillos, en este caso no es estadisticamente significativo y solo nos genera suciedad en la regresión. Adicionalmente en un sentido economico, la demanda de los cigarillos no tienden a ser influeciados por el ingreso que los individuos tienen, por su naturaleza son un bien “necesario” que se cosume irrelevantemente del ingreso de las personas.</p>
+<pre class="r"><code>linear.cigs.corr &lt;-lm(PACKS ~ price, data=cigs)</code></pre>
+<div id="multicolinealidad" class="section level4">
+<h4>Multicolinealidad</h4>
+<p>Por definicion una regresión simple no puede tener multicolinealidad, ya que no hay otras variables con las cuales “Price” pueda tener alguna asociacion lineal con, el remover la variable de Income nos soluciona el problema de multicolinealidad.</p>
+</div>
+<div id="heteroscedasticidad" class="section level4">
+<h4>Heteroscedasticidad</h4>
+<p>El cambio en la regresión resulta en un incremento enorme en la dispercion de las perturbaciones estocasticas de nuestra regresión.</p>
+<pre class="r"><code>whitecig2=as.data.frame(white_lm(linear.cigs.corr))
+
+stargazer(whitecig2, type =&quot;text&quot;, title = &quot;Cuadro #2.1: Prueba de Heterocedastidad&quot;, summary = FALSE)</code></pre>
+<pre><code>## 
+## Cuadro #2.1: Prueba de Heterocedastidad
+## ======================================================
+##   statistic p.value parameter    method    alternative
+## ------------------------------------------------------
+## 1   0.864    0.649      2     White&#39;s Test   greater  
+## ------------------------------------------------------</code></pre>
+<p>Observando el resultado se obtiene que con un nivel de significancia de 5% una vez más se rechaza la hipotesis nula, confirmando que existe heteroscedasticidad en el modelo corregido.</p>
+<p>Esto nos dice que en la nueva regresión se observan estimadores insesgados pero que no son los mejores estimadores linealmente independientes y cuyos errores estándar son incorrectos. Utilizamos la correción de White donde el error estándar asociado con el coefficiente de Price, el estadistico t y el pvalue se ven afectados. Sin embargo no cambia de manera significativa el efecto de Price en explicar la regresión.</p>
+<pre class="r"><code>linear.cigs.w=coeftest(linear.cigs.corr,vcov.=vcovHC(linear.cigs.corr,&quot;HC1&quot;))</code></pre>
+</div>
 </div>
 <div id="comparación" class="section level3">
 <h3>1.6 Comparación</h3>
+<pre class="r"><code>stargazer(linear.cigs,linear.cigs.corr,linear.cigs.w,type=&quot;text&quot;, title=&quot;Cuadro #2.2: Original vs Corregidos&quot;)</code></pre>
+<pre><code>## 
+## Cuadro #2.2: Original vs Corregidos
+## ============================================================================
+##                                       Dependent variable:                   
+##                     --------------------------------------------------------
+##                                        PACKS                                
+##                                         OLS                      coefficient
+##                                                                     test    
+##                              (1)                   (2)               (3)    
+## ----------------------------------------------------------------------------
+## price                     -1.338***             -1.198***         -1.198*** 
+##                            (0.325)               (0.282)           (0.259)  
+##                                                                             
+## income                      0.172                                           
+##                            (0.197)                                          
+##                                                                             
+## Constant                  4.300***               5.094***         5.094***  
+##                            (0.909)               (0.063)           (0.062)  
+##                                                                             
+## ----------------------------------------------------------------------------
+## Observations                 46                     46                      
+## R2                          0.304                 0.291                     
+## Adjusted R2                 0.271                 0.275                     
+## Residual Std. Error    0.163 (df = 43)       0.163 (df = 44)                
+## F Statistic         9.378*** (df = 2; 43) 18.084*** (df = 1; 44)            
+## ============================================================================
+## Note:                                            *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
 </div>
 </div>
 <div id="análisis-energy-data" class="section level2">
@@ -480,7 +531,7 @@ d=\frac{\sum_{t=2}^{T}(\hat{u_{t}}-\hat{u_{t-1}})^{2}}{\sum_{t=1}^{T}\hat{u_{t}^
 H_{0}: d=2 \implies \nexists \, autocorrelación
 \]</span></p>
 <pre><code>##  lag Autocorrelation D-W Statistic p-value
-##    1       0.1820963      1.522461   0.004
+##    1       0.1820963      1.522461   0.002
 ##  Alternative hypothesis: rho != 0</code></pre>
 <p>Para este caso con <span class="math inline">\(n=158\)</span> y <span class="math inline">\(k=4\)</span>, tenemos que dentro de nuestro mapa.</p>
 <p><span class="math display">\[
@@ -491,9 +542,75 @@ d_{L} = 1.70 \, \&amp; \, d_{U} = 1.78
 </div>
 <div id="corrección-a-las-pruebas-1" class="section level3">
 <h3>2.5 Corrección a las Pruebas</h3>
+<p>Se procede a realizar la correción por heterocedasticidad donde se toma el logaritmo de los residuos al cuadrado de la regresión. Luego cada variable explicativa se resta con este componente y se corre la regresión con los nuevos datos</p>
+<pre class="r"><code>datos_reg$u2 &lt;- residuals(linear.energy)
+
+datos_reg$Costo_2 &lt;- datos_reg$Costo - (datos_reg$u2)
+datos_reg$Produccion_2 &lt;- datos_reg$Produccion - (datos_reg$u2)
+datos_reg$Trabajo_2 &lt;- datos_reg$Trabajo -(datos_reg$u2)
+datos_reg$Capital_2 &lt;- datos_reg$Capital - (datos_reg$u2)
+datos_reg$Combustible_2 &lt;- datos_reg$Combustible - (datos_reg$u2)
+
+linear.energy.corre &lt;- lm( Costo_2 ~  Produccion_2 + Trabajo_2 + Capital_2 + Combustible_2 , data= datos_reg)
+
+summary(linear.energy.corre)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Costo_2 ~ Produccion_2 + Trabajo_2 + Capital_2 + 
+##     Combustible_2, data = datos_reg)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.33234 -0.06731 -0.00323  0.07508  0.21208 
+## 
+## Coefficients:
+##                Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)    0.207562   0.277078   0.749    0.455    
+## Produccion_2   0.846528   0.004693 180.387  &lt; 2e-16 ***
+## Trabajo_2     -0.461959   0.035435 -13.037  &lt; 2e-16 ***
+## Capital_2     -0.189180   0.032403  -5.838 3.05e-08 ***
+## Combustible_2  0.026552   0.001074  24.717  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.1051 on 153 degrees of freedom
+## Multiple R-squared:  0.9954, Adjusted R-squared:  0.9953 
+## F-statistic:  8264 on 4 and 153 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Se puede observar a tráves de la función summary que cada variable explicativa es significante ya que los p-values asociados son practicamente 0 a comparación de la regresión original donde el componente del Trabajo no era estadisticamente significativo. La prueba F conjunta nos devuelve un P-value que tiende a 0, entonces se sigue rechazando la <span class="math inline">\(H_{0}: \beta_{1}= \beta_{2}=\beta_{3}= \beta_{4}=0\)</span>.</p>
 </div>
 <div id="comparación-1" class="section level3">
 <h3>2.6 Comparación</h3>
+<pre class="r"><code>jarque.bera.test(residuals(linear.energy.corre))</code></pre>
+<pre><code>## 
+##  Jarque Bera Test
+## 
+## data:  residuals(linear.energy.corre)
+## X-squared = 1.8231, df = 2, p-value = 0.4019</code></pre>
+<pre class="r"><code>hist(residuals(linear.energy.corre))</code></pre>
+<p><img src="data:image/png;base64,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" width="672" /></p>
+<pre class="r"><code>white_lm(linear.energy.corre, interactions = FALSE)</code></pre>
+<pre><code>## # A tibble: 1 x 5
+##   statistic p.value parameter method       alternative
+##       &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;      
+## 1      17.7  0.0235         8 White&#39;s Test greater</code></pre>
+<pre class="r"><code>#Se crea la matriz de variables explicativas
+
+X &lt;- as.matrix(cbind(datos_reg$Produccion_2, datos_reg$Trabajo_2, datos_reg$Capital_2, datos_reg$Combustible_2))
+
+#Se computa X&#39;X
+
+X_prima_X &lt;- t(X)%*%X
+
+#Se obtienen los valores propis de la matriz X&#39;X con la función eigen (base de R), se usa la opción only.values = TRUE para que solo brinde los valores propios y no sus vectores asociados
+valores_propios&lt;-eigen(X_prima_X, only.values = TRUE)
+
+#Se computa el índice de condición K
+indice_condicion_k&lt;-sqrt(max(valores_propios$values))/sqrt(min(valores_propios$values))
+
+indice_condicion_k</code></pre>
+<pre><code>## [1] 146.293</code></pre>
+<p>A modo de comparación el modelo corregido presenta residuos que se distribuyen de manera normal ya que presenta un p-value de 0.4 por lo que no se rechaza la Ho, caso contrario al modelo original donde hay evidencia estadistica de residuos no normalizados En cuanto a la heterocedasticidad el p-value asociado al modelo corregido aumenta a 0.02 por lo que con un nivel de significancia del 1% no rechazamos Ho donde es que no exista heterocedasticidad; sin embargo no es algo con lo que estemos tranquilos pero lo consideramos aceptable en términos del problema y de la estructura que presentan los datos<br />
+Por último el problema de multicolinealidad no se corrige con el nuevo modelo; sin embargo desde un punto económico y en terminos de los datos de la regresión se espera que exista una multicolinealidad fuerte entre estas variables explicativas; es esperable que la produccion, trabajo, capital, combustible mantengan una relación lineal que si no es perfecta al menos exista y nos genere ruido en la regresión.</p>
 </div>
 </div>
 <div id="análisis-housing-data" class="section level2">
@@ -533,30 +650,32 @@ Price = \beta_{0}+ \beta_{1}lotsize+\beta_{2}bedrooms+\beta_{3}bathrooms+\mu
 ## F Statistic          171.025*** (df = 3; 542)  
 ## ===============================================
 ## Note:               *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
-<p>Con todo lo demas constante se pueden realizar las siguientes interpretacions de los coeficientes.</p>
-<p>Para el <span class="math inline">\(\beta_{1}\)</span> se interpreta como la elasticidad del costo a producción, si la producción incrementa en 1% se espera que los costos aumenten en 0.84%.</p>
-<p>Para el <span class="math inline">\(\beta_{3}\)</span> se interpreta como la elasticidad del costo a capital, si el capital incrementa en 1% se espera que los costos aumenten en 0.18%.</p>
-<p>Para el <span class="math inline">\(\beta_{4}\)</span> se interpreta como la semielasticidad del costo respecto al combustible, si la producción incrementa en un dolar se espera que los costos aumenten en 0.023%</p>
+<p>Con todo lo demás constante se pueden realizar las siguientes interpretacions de los coeficientes.</p>
+<p>Para el <span class="math inline">\(\beta_{0}\)</span> (el intercepto), se interpreta como el precio que existe al ser las variables explicativas iguales a cero. Se observa que, el precio es negativo cuando las variables explicativas son cero. No tiene mucho sentido económico, puesto que no hay casas en venta con precios negativos en el mercado.</p>
+<p>Para el <span class="math inline">\(\beta_{1}\)</span> se interpreta como el aporte que genera el incremento de un metro cuadrado de la variable “lotsize” al precio de las casas. Se ve que afecta positivamente al precio.</p>
+<p>Para el <span class="math inline">\(\beta_{2}\)</span> se interpreta como el aporte que genera el incremento de una unidad de la variable “bedrooms” (número de habitaciones) al precio de las casas. Igual que el tamaño del lote, afecta positivamente al precio.</p>
+<p>Para el <span class="math inline">\(\beta_{3}\)</span> se interpreta como el aporte que genera el incremento de una unidad de la variable “bathrooms” (número de baños) al precio de las casas. Se ve que, al igual que “lotsize” y “bedrooms” afecta positivamente al precio, pero, el número de baños afecta en una cuantía mayor al precio. Es decir (comparándolo con las habitaciones), es más caro un baño adicional que una habitación adicional.</p>
 </div>
 <div id="pruebas-t-2" class="section level3">
 <h3>3.2 Pruebas t</h3>
 <p>Utilizando la misma función que en la pregunta anterior, y con el cuadro 5 se obtiene la información necesaria para obtener los resultados de la prueba <span class="math inline">\(t\)</span>.</p>
-<p>Tomando <span class="math inline">\(H_{0}: \beta_{1}=0\)</span> (Producción no tiene efecto en los Costos) La prueba <span class="math inline">\(t\)</span> realizada para la producción nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde la producción no afecta los costos.</p>
-<p>Tomando <span class="math inline">\(H_{0}: \beta_{2}=0\)</span> (Trabajo no tiene efecto en los Costos) La prueba <span class="math inline">\(t\)</span> realizada para la producción nos devuelve un P-value de 0.7515, entonces no se se puede rechazar la hipotesis nula, por lo tanto el trabajo no tiene efecto sobre los costos.</p>
-<p>Tomando <span class="math inline">\(H_{0}: \beta_{3}=0\)</span> (Capital no tiene efecto en los Costos) La prueba <span class="math inline">\(t\)</span> realizada para la producción nos devuelve un P-value de 0.0496, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el capital no afecta los costos.</p>
-<p>Tomando <span class="math inline">\(H_{0}: \beta_{4}=0\)</span> (Combustible no tiene efecto en los Costos) La prueba <span class="math inline">\(t\)</span> realizada para la producción nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde la producción no afecta los costos.</p>
+<p>Tomando <span class="math inline">\(H_{0}: \beta_{0}=0\)</span> (El intercepto es nulo) La prueba <span class="math inline">\(t\)</span> realizada para el intercepto, nos devuelve un P-value que es aproximadamente, 0.523. Entonces con un nivel de significancia del 5% podemos no rechazar la hipotesis nula donde el intercepto no afecta los precios, puesto que el P-value es mayor que el nivel de tolerancia a cometer el error tipo I. Esto confirma la intuición del inciso pasado, en el que se decía que, no tendría mucho sentido que eso fuese cierto (que el precio de las casas fuesen negativos)</p>
+<p>Tomando <span class="math inline">\(H_{0}: \beta_{1}=0\)</span> (El tamaño del lote no tiene efecto sobre el precio de las casas) La prueba <span class="math inline">\(t\)</span> realizada para el tamaño de los lotes nos devuelve un P-value muy cercano a cero. Entonces se puede rechazar la hipotesis nula. Es decir, el tamaño del lote sí tiene un efecto sobre el precio de las casas.</p>
+<p>Tomando <span class="math inline">\(H_{0}: \beta_{2}=0\)</span> (El número de habitaciones no tiene un efecto en el precio de las casas). La prueba <span class="math inline">\(t\)</span> realizada para el número de habitaciones nos devuelve un P-value cercano a cero. Entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el número de habitaciones no afectan los precios de las casas. Es decir, el número de habitaciones sí afecta al precio de las casas.</p>
+<p>Tomando <span class="math inline">\(H_{0}: \beta_{3}=0\)</span> (Número de baños no tiene efecto en los precios) La prueba <span class="math inline">\(t\)</span> realizada para el número de baños nos devuelve un P-value que tiende a 0. Entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el número de baños no afecta los precios de las casas.</p>
 </div>
 <div id="prueba-f-1" class="section level3">
 <h3>3.3 Prueba F</h3>
-<p>Utilizando la misma función que en la pregunta anterior, y con el cuadro 2 se obtiene la información necesaria para obtener los resultados de la prueba F. Tomando una prueba de significancia conjunta tal que nuestra hipotesis nula sea; <span class="math inline">\(H_{0}: \beta_{1}= \beta_{2}=\beta_{3}= \beta_{4}=0\)</span>. La prueba F conjunta nos devuelve un P-value que tiende a 0, entonces con un nivel de significancia del 5% se rechaza la hipotesis nula conjunta de que los B´s no afectan los costos.</p>
-<p>Interpretando la prueba F de significancia conjunta del modelo con la función summary donde la Ho: B´s(en conjunto)= 0 se puede afirmar que los coeficientes de las variables explicativas no son 0 ya que el p-value asociado a la prueba es practicamente 0.</p>
+<p>Utilizando los datos de la regresión incluidos el cuadro 5 se obtiene la información necesaria para obtener los resultados de la prueba F. Tomando una prueba de significancia conjunta tal que nuestra hipotesis nula sea; <span class="math inline">\(H_{0}: \beta_{0}= \beta_{1}=\beta_{2}= \beta_{3}=0\)</span>.</p>
+<p>La prueba F conjunta nos devuelve un P-value que tiende a 0. Entonces dado lo anterior y con un nivel de significancia del 5% se rechaza la hipotesis nula de que los Betas de forma conjunta no afectan los precios de las casas.</p>
+<p>Más claro: interpretando la prueba F de significancia conjunta del modelo con la función summary donde la Ho: Betas (en conjunto) = 0, se puede afirmar que los coeficientes de las variables explicativas no son cero, ya que el p-value asociado a la prueba es practicamente cero.</p>
 </div>
 <div id="prubas-generales-evaluación-de-supuestos-mcrl-2" class="section level3">
 <h3>3.4 Prubas Generales Evaluación de Supuestos MCRL</h3>
 <p>Para esta sección procedemos a analizar los resultados de la secciones 3.1-3.3, para ello consideraremos los resultados y en la siguiente sección procederemos a intentar corregir los efectos mostrados o justificar las acciones pasivas frente a ellos.</p>
 <div id="jarque-bera-2" class="section level4">
 <h4>Jarque-Bera</h4>
-<p>Considere la prueba de normalidad Jarque-Bera, para ello podemos observar inicialmente la distribución de los residuos de nuestra regresión <code>linear.enerfy</code>. Note que empiricamente, no aparenta tener una distribución normal.</p>
+<p>Considere la prueba de normalidad Jarque-Bera, para ello podemos observar inicialmente la distribución de los residuos de nuestra regresión <code>linear.house</code>. Note que empiricamente, no aparenta tener una distribución normal.</p>
 <p><img src="data:image/png;base64,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" width="672" /></p>
 <p>Con esta información podemos correr la prueba de Jarque-Bera, para ello parta de la siguiente hipotesis nula donde,</p>
 <p><span class="math display">\[
@@ -567,7 +686,7 @@ H_{0}: JB\sim \overline{\chi^{2}}_{2 \, g.l.}
 ## 
 ## data:  residuals(linear.house)/50000
 ## X-squared = 141.22, df = 2, p-value &lt; 2.2e-16</code></pre>
-<p>El codigo nos da un resultado de con el p-value que tiende a 0, por lo que con un nivel de significancia del 5% podemos rechazar <span class="math inline">\(H_{0}\)</span>. Por ello concluimos que los residuos no se distribuyen de forma normal.</p>
+<p>El código nos da un resultado en el que, el p-value que tiende a 0, por lo que, con un nivel de significancia del 5% podemos rechazar <span class="math inline">\(H_{0}\)</span>. Por ello concluimos que los residuos no se distribuyen de forma normal.</p>
 </div>
 <div id="prueba-de-heterocedasticidad-white-2" class="section level4">
 <h4>Prueba de Heterocedasticidad (White)</h4>
@@ -575,7 +694,7 @@ H_{0}: JB\sim \overline{\chi^{2}}_{2 \, g.l.}
 <p><span class="math display">\[
 H_{0}: \nexists \, Heterocedasticidad
 \]</span></p>
-<p>Corremos la prueba la cual nos da el siguiente resultado,</p>
+<p>Corremos la prueba la cual nos arroja el siguiente resultado,</p>
 <pre><code>## 
 ## Cuadro #6: Prueba de Heterocedastidad
 ## ======================================================
@@ -589,7 +708,7 @@ H_{0}: \nexists \, Heterocedasticidad
 </div>
 <div id="prueba-de-multicolinealidad-2" class="section level4">
 <h4>Prueba de Multicolinealidad</h4>
-<p>Inicialmente considere dentro de nuestra correlación si ha de existir un problema de multicolinealidad perfecta, corremos un codigo en el modelo para observar si este detecta algun error.</p>
+<p>Inicialmente considere dentro de nuestra correlación si ha de existir un problema de multicolinealidad perfecta. Corremos un código en el modelo para observar si este detecta algún error.</p>
 <pre class="r"><code>lm( PRICE ~ lotsize + bedrooms + bathrooms, data= house, singular.ok = FALSE)</code></pre>
 <pre><code>## 
 ## Call:
@@ -599,14 +718,14 @@ H_{0}: \nexists \, Heterocedasticidad
 ## Coefficients:
 ## (Intercept)      lotsize     bedrooms    bathrooms  
 ##   -2418.293        5.411     5826.802    19750.210</code></pre>
-<p>Note que por el momento no tenemos un problema de multicolinealidad perfecta. Sin embargo, es necesario realizar un analisis más de este. Considere un analisis de multicolinealidad, para ello considere los siguientes factores, la <span class="math inline">\(R^{2}\)</span> a un nivel de 0.98, vista en el Cuadro #3; y la matriz de correlaciones entre variables explicativas.</p>
+<p>Note que por el momento no tenemos un problema de multicolinealidad perfecta. Sin embargo, es necesario realizar un analisis más de éste. Considere un análisis de multicolinealidad, para ello considere los siguientes factores, la <span class="math inline">\(R^{2}\)</span> a un nivel de 0.98, vista en el Cuadro #3; y la matriz de correlaciones entre variables explicativas.</p>
 <pre class="r"><code>cor(x=house$lotsize, y= house$bedrooms, method = c(&quot;pearson&quot;))</code></pre>
 <pre><code>## [1] 0.1518515</code></pre>
 <pre class="r"><code>cor(x=house$lotsize, y= house$bathrooms, method = c(&quot;pearson&quot;))</code></pre>
 <pre><code>## [1] 0.1938335</code></pre>
 <pre class="r"><code>cor(x=house$bedrooms, y= house$bathrooms, method = c(&quot;pearson&quot;))</code></pre>
 <pre><code>## [1] 0.3737688</code></pre>
-<p>Visto los resultados de la matriz, vemos que si existe naja correlación entre varias variablesPor ellos ahora usaremos el analisis del indice K.</p>
+<p>Visto los resultados de la matriz, vemos que sí existe una correlación entre varias variables. Por ello ahora usaremos el analisis del indice K.</p>
 <p>Procedemos en analsis del indice K donde sabemos que,</p>
 <p><span class="math display">\[
 K= \frac{\max_{valor \, propio}X&#39;X}{\min_{valor \, propio}X&#39;X}
@@ -634,12 +753,153 @@ indice_condicion_k</code></pre>
 <pre><code>## [1] 12682.15</code></pre>
 <p>El Indice K nos da un número extremadamente alto, por lo que se tiene un problema muy serio de multicolinealidad.</p>
 </div>
+<div id="autocorrelación" class="section level4">
+<h4>Autocorrelación</h4>
+<p>Vemos que, al tener datos de corte transversales y muchas observaciones, el problema de autocorrelación no es uno que nos deba molestar.</p>
+</div>
 </div>
 <div id="corrección-a-las-pruebas-2" class="section level3">
 <h3>3.5 Corrección a las Pruebas</h3>
+<p>Con el fin de remediar la violación de los supuestos, se procede de la siguiente manera.</p>
+<ol style="list-style-type: decimal">
+<li><p>Se obtiene una nueva variable: la proporción de baños sobre habitaciones. Es probable esperar que, el número va a ser menor o igual que uno, puesto que, normalmente, se tienen más habitaciones que baños.</p></li>
+<li><p>Se obtiene el logaritmo natural de la proporción anteriormente definida.</p></li>
+<li><p>Se obtiene el logaritmo natural de los precios.</p></li>
+<li><p>Obtenemos la raíz cuadrada del tamaño de los lotes.</p></li>
+</ol>
+<p>Es decir:</p>
+<pre class="r"><code>house$babed_ratio &lt;- house$bathrooms/house$bedrooms
+house$log_babedratio &lt;- log(house$babed_ratio)
+house$log_PRICE &lt;- log(house$PRICE)
+house$sqrt_lotsize &lt;- sqrt(house$lotsize)</code></pre>
+<p>A partir de lo anterior, corremos la siguiente regresión:</p>
+<pre class="r"><code>linear.house1 &lt;- lm( formula = log_PRICE ~ sqrt_lotsize + log_babedratio, data = house)</code></pre>
+<pre><code>## 
+## Cuadro #7: Resultados de la Nueva Regresión
+## ===============================================
+##                         Dependent variable:    
+##                     ---------------------------
+##                              log_PRICE         
+## -----------------------------------------------
+## sqrt_lotsize                 0.015***          
+##                               (0.001)          
+##                                                
+## log_babedratio               0.158***          
+##                               (0.039)          
+##                                                
+## Constant                     10.174***         
+##                               (0.075)          
+##                                                
+## -----------------------------------------------
+## Observations                    546            
+## R2                             0.343           
+## Adjusted R2                    0.340           
+## Residual Std. Error      0.302 (df = 543)      
+## F Statistic          141.522*** (df = 2; 543)  
+## ===============================================
+## Note:               *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+<div id="corrigiendo-la-normalidad." class="section level4">
+<h4>Corrigiendo la normalidad.</h4>
+<p>Vemos que, al aplicar la prueba de Jaque-Bera sobre la regresión transformada, se obtiene que:</p>
+<pre><code>## 
+##  Jarque Bera Test
+## 
+## data:  residuals(linear.house1)/50000
+## X-squared = 1.0152, df = 2, p-value = 0.6019</code></pre>
+<p>Como ahora se obtiene un P-value mayor que un error de tolerancia de 5%, no se rechaza la hipótesis nula. Por lo tanto, podemos no rechazar el hecho de que existe homocedasticidad.</p>
+</div>
+<div id="corrigiendo-la-heterocedasticidad." class="section level4">
+<h4>Corrigiendo la heterocedasticidad.</h4>
+<p>Si aplicamos la prueba de White sobre la nueva regresión, se obtiene que:</p>
+<pre><code>## 
+## Cuadro #8: Prueba de Heterocedastidad
+## ======================================================
+##   statistic p.value parameter    method    alternative
+## ------------------------------------------------------
+## 1  10.158    0.038      4     White&#39;s Test   greater  
+## ------------------------------------------------------</code></pre>
+<pre><code>##   statistic    p.value parameter       method alternative
+## 1  10.15764 0.03785442         4 White&#39;s Test     greater</code></pre>
+<p>De nuevo, vemos que el nuevo P-value es mayor que el error de tolerancia al 5%, lo que significa que no se rechaza la hipótesis nula. Por lo tanto, existe homocedasticidad.</p>
+</div>
+<div id="corrigiendo-la-multicolinealidad." class="section level4">
+<h4>Corrigiendo la multicolinealidad.</h4>
+<p>Aplicando nuevamente las pruebas llevadas a cabo anteriormente, se tiene que:</p>
+<p>Si buscamos la multicolinealidad perfecta de la nueva regresión, no la vamos a encontrar. De acuerdo con el siguiente código:</p>
+<pre class="r"><code>lm( log_PRICE ~ sqrt_lotsize + log_babedratio, data=house, singular.ok = FALSE)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = log_PRICE ~ sqrt_lotsize + log_babedratio, data = house, 
+##     singular.ok = FALSE)
+## 
+## Coefficients:
+##    (Intercept)    sqrt_lotsize  log_babedratio  
+##       10.17350         0.01453         0.15824</code></pre>
+<p>Se observa que no existe una multicolinealidad perfecta entre ambas variables explicativas.</p>
+<p>Ahora, si analizamos la correlación que existe entre las variables explicativas se tiene que:</p>
+<pre class="r"><code>cor(x=house$sqrt_lotsize, y= house$log_babedratio, method = c(&quot;pearson&quot;))</code></pre>
+<pre><code>## [1] 0.07162603</code></pre>
+<p>Vemos que el coeficiente es menor que 0.8, lo que indica que no se tiene un problema grave de multicolinealidad.</p>
+<p>Volvemos a utiilzar el análisis de los valores propios, esta vez, utilizamos el siguiente código:</p>
+<pre class="r"><code>#Se crea la matriz de variables explicativas
+
+X &lt;- as.matrix(cbind(house$sqrt_lotsize, house$log_babedratio))
+
+#Se computa X&#39;X
+
+X_prima_X &lt;- t(X)%*%X
+
+#Se obtienen los valores propis de la matriz X&#39;X con la función eigen (base de R), se usa la opción only.values = TRUE para que solo brinde los valores propios y no sus vectores asociados
+
+valores_propios&lt;-eigen(X_prima_X, only.values = TRUE)
+
+#Se computa el índice de condición K
+
+indice_condicion_k&lt;-sqrt(max(valores_propios$values))/sqrt(min(valores_propios$values))
+
+indice_condicion_k</code></pre>
+<pre><code>## [1] 186.91</code></pre>
+<p>Ahora, vemos que, el IC sigue siendo mayor que 30, pero, es mucho menor que el IC de la regresión no transformada.</p>
+</div>
 </div>
 <div id="comparación-2" class="section level3">
 <h3>3.6 Comparación</h3>
+<p>Al comparar ambas regresiones (la original vs la transformada) podemos observar que, la heterocedasticidad en la original es mayor que en la segunda.</p>
+<pre><code>## 
+## Cuadro: Comparación de las Regresiones
+## =====================================================================
+##                                    Dependent variable:               
+##                     -------------------------------------------------
+##                              PRICE                  log_PRICE        
+##                               (1)                      (2)           
+## ---------------------------------------------------------------------
+## lotsize                     5.411***                                 
+##                             (0.388)                                  
+##                                                                      
+## bedrooms                  5,826.802***                               
+##                           (1,206.571)                                
+##                                                                      
+## bathrooms                19,750.210***                               
+##                           (1,785.083)                                
+##                                                                      
+## sqrt_lotsize                                         0.015***        
+##                                                      (0.001)         
+##                                                                      
+## log_babedratio                                       0.158***        
+##                                                      (0.039)         
+##                                                                      
+## Constant                   -2,418.293               10.174***        
+##                           (3,779.412)                (0.075)         
+##                                                                      
+## ---------------------------------------------------------------------
+## Observations                  546                      546           
+## R2                           0.486                    0.343          
+## Adjusted R2                  0.483                    0.340          
+## Residual Std. Error  19,191.610 (df = 542)       0.302 (df = 543)    
+## F Statistic         171.025*** (df = 3; 542) 141.522*** (df = 2; 543)
+## =====================================================================
+## Note:                                     *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+<p>Y, ahora, gracias a las transformaciones que se le aplicaron a las variables explicativas y dependiente, se logra corregir las violaciones a los supuestos. En el caso de la multicolinealidad, si bien no se elimina por completo, se logra disminuir la dependencia entre las variables explicativas.</p>
 </div>
 </div>
 

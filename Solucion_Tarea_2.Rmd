@@ -27,7 +27,7 @@ library(olsrr)
 library(lmtest)
 library(sandwich)
 
-setwd("C:/Users/FamiliaFeliz/Documents/GitHub/Tarea_1_Econometria")
+setwd("~/UCR/Tarea_2_Econometria")
 
 cigs = read_excel("Data/CigarettesB.xlsx")
 
@@ -36,7 +36,7 @@ energy = read_excel("Data/Electricity1970.xlsx")
 house = read_excel("Data/HousePrices.xlsx")
 
 datos_reg <- select(energy, Costo= ln_COST, Produccion = ln_output, 
-                    Trabajo= ln_labor, Capital= ln_capital, Combustible= fuel)
+                    Trabajo= ln_labor, Capital= ln_capital, Combustible= ln_fuel)
 ```
 
 En este presente documento se procede a realizar un análisis econométrico de diversas bases de datos de interés.
@@ -74,7 +74,7 @@ En este otro caso note que dada la definición del modelo $\beta_{1}$ es un indi
 Considere que al ser mayor a uno no sigue la intuición económica incial que los cigarrillos son ineslásticos.
 
 ```{r, echo=TRUE, warning=FALSE}
-stargazer(linear.cigs, type = "text", title = "Cuadro #1: Resultados Regresión")
+stargazer(linear.cigs, type = "text", title = "Cuadro #1.1: Resultados Regresión")
 coef = coefficients(linear.cigs)
 ```
 
@@ -135,7 +135,7 @@ Corremos la prueba la cual nos da el siguiente resultado,
 ```{r White, echo=FALSE}
 white.cigs <- as.data.frame(white_lm(linear.cigs, interactions = TRUE))
 
-stargazer(white.cigs, type ="text",title = "Cuadro #2: Prueba de Heterocedastidad", summary = FALSE)
+stargazer(white.cigs, type ="text",title = "Cuadro #1.2: Prueba de Heterocedastidad", summary = FALSE)
 
 ```
 
@@ -231,14 +231,16 @@ Como nuestro estadistico nos dio 2.32, note que $2.32 < (4-1.56 )$, asi entonces
 
 Dado que nuestro modelo sufre de un problema moderado de multicolinealidad y un problema de heteroscedasticidad entre sus residuos, aplicamos ciertas medidas para corregir estos problemas.
 La principal medida que vamos a aplicar es la eliminación de la variable 'Income' y convertir la regresión en una regresión simple de la forma: $$
-ln(PACKS) = \beta_{0}+\beta_{1}income+\mu
+ln(PACKS) = \beta_{0}+\beta_{1}price+\mu
 $$
 
 A pesar de que el ingreso es una variable que pueda explicarnos a cierto nivel la demanda por cigarillos, en este caso no es estadisticamente significativo y solo nos genera suciedad en la regresión.
-Adicionalmente en un sentido economico, la demanda de los cigarillos no tienden a ser influeciados por el ingreso que los individuos tienen, por su naturaleza son un bien "necesario" que se cosume irrelevantemente del ingreso de las personas.
+Adicionalmente, en un sentido economico, la demanda de los cigarillos no tienden a ser influeciados por el ingreso que los individuos tienen, por su naturaleza son un bien "necesario" que se cosume irrelevantemente del ingreso de las personas.
+
+Nuestra nueva regresión quedaría de la la forma.
 
 ```{r, warning = FALSE}
-linear.cigs.corr <-lm(PACKS ~ income, data=cigs)
+linear.cigs.corr <-lm(PACKS ~ price, data=cigs)
 ```
 
 #### Multicolinealidad
@@ -247,29 +249,23 @@ Por definicion una regresión simple no puede tener multicolinealidad, ya que no
 
 #### Heteroscedasticidad
 
-El cambio en la regresión resulta en un incremento enorme en la dispercion de las perturbaciones estocasticas de nuestra regresión.
+Para la prueba de Hetereocedasticidad, vemos en este caso que dicho cambio mejoró el resultado de nuestro modelo.
 
-```{r, warning = FALSE}
+```{r echo=FALSE, warning=FALSE}
 whitecig2=as.data.frame(white_lm(linear.cigs.corr))
 
 stargazer(whitecig2, type ="text", title = "Cuadro #2.1: Prueba de Heterocedastidad", summary = FALSE)
 ```
 
-Observando el resultado se obtiene que con un nivel de significancia de 5% una vez más se rechaza la hipotesis nula, confirmando que existe heteroscedasticidad en el modelo corregido.
-
-Esto nos dice que en la nueva regresión se observan estimadores insesgados pero que no son los mejores estimadores linealmente independientes y cuyos errores estándar son incorrectos.
-Utilizamos la correción de White donde el error estándar asociado con el coefficiente de Price, el estadistico t y el pvalue se ven afectados.
-Sin embargo no cambia de manera significativa el efecto de Price en explicar la regresión.
-
-```{r, warning = FALSE}
-linear.cigs.w=coeftest(linear.cigs.corr,vcov.=vcovHC(linear.cigs.corr,"HC1"))
-```
+Observando el resultado se obtiene que con un nivel de significancia de 5% una vez no se rechaza la hipotesis nula, confirmando que existe no heteroscedasticidad en el modelo corregido.
 
 ### 1.6 Comparación
 
 ```{r}
-stargazer(modelo1,linear.cigs.corr,linear.cigs.w,type="text", title="Cuadro #2.2: Original vs Corregidos")
+stargazer(linear.cigs,linear.cigs.corr,type="text", title="Cuadro #2.2: Original vs Corregidos")
 ```
+
+En conclusión, para nuestra regresión
 
 ## 2. Análisis Energy Data
 
@@ -279,7 +275,7 @@ Las variables explicativas tomadas son el salario promedio de la firma, el indic
 A partir de estas variables, la regresión sera calculada con los logaritmos naturales de las variables costo, producción, trabajo y capital
 
 $$
-ln(Costo) = \beta_{0}+ \beta_{1}ln(producción)+\beta_{2}ln(trabajo)+\beta_{3}ln(capital)+\beta_{4}combustible +\mu
+ln(Costo) = \beta_{0}+ \beta_{1}ln(producción)+\beta_{2}ln(trabajo)+\beta_{3}ln(capital)+\beta_{4}ln(combustible) +\mu
 $$
 
 ### 2.1 Regresión Lineal
@@ -287,11 +283,11 @@ $$
 Con el fin de analizar la regresión lineal de nuestras variables, utilizaremos el siguiente codigo:
 
 ```{r, warning = FALSE}
-linear.energy <- lm( Costo ~ Produccion + Trabajo + Capital + Combustible, data= datos_reg)
+linear.energy <- lm( Costo ~ + Trabajo + Capital + Combustible, data= datos_reg)
 ```
 
 ```{r, echo=FALSE, warning=FALSE}
-stargazer(linear.energy, type = "text", title = "Cuadro #3: Resultados Regresión")
+stargazer(linear.energy, type = "text", title = "Cuadro #2.1: Resultados Regresión")
 coef2 = coefficients(linear.energy)
 ```
 
@@ -364,7 +360,7 @@ Corremos la prueba la cual nos da el siguiente resultado,
 ```{r White 2, echo=FALSE}
 white.energy <- as.data.frame(white_lm(linear.energy, interactions = FALSE))
 
-stargazer(white.energy, type ="text",title = "Cuadro #4: Prueba de Heterocedastidad", summary = FALSE)
+stargazer(white.energy, type ="text",title = "Cuadro #2.2: Prueba de Heterocedastidad", summary = FALSE)
 
 
 ```
@@ -376,7 +372,7 @@ Observando los resultados de la prueba se obtiene que con un nivel de significan
 Inicialmente considere dentro de nuestra correlación si ha de existir un problema de multicolinealidad perfecta, corremos un codigo en el modelo para observar si este detecta algun error.
 
 ```{r, echo=TRUE}
-lm( Costo ~ Produccion + Trabajo + Capital + Combustible, data= datos_reg, singular.ok = FALSE)
+lm( Costo ~ Trabajo + Capital + Combustible, data= datos_reg, singular.ok = FALSE)
 ```
 
 Note que por el momento no tenemos un problema de multicolinealidad perfecta.
@@ -455,31 +451,28 @@ $$
 d_{L} = 1.70 \, \& \, d_{U} = 1.78
 $$
 
-Como nuestro estadistico nos dio 1.55, note que $1.55 < 1.70 )$, asi entonces se puede rechazar la hipotesis nula y concluimos que hay presencia de autocorrelación.
+Como nuestro estadistico nos dio 1.45, note que $1.45 < 1.70 )$, asi entonces se puede rechazar la hipotesis nula y concluimos que hay presencia de autocorrelación.
 
 ### 2.5 Corrección a las Pruebas
-Se procede a realizar la correción por heterocedasticidad donde se toma el logaritmo de los residuos al cuadrado de la regresión.
-Luego cada variable explicativa se resta con este componente y se corre la regresión con los nuevos datos
+
+Se procede a realizar la correción del modelo enfocandonos en disminuir la heterocedasticidad.
+Para ellos tomamos la el metodo de Minimos Cuadrados Ponderados.
+
 ```{r}
 
-datos_reg$u2 <- log(residuals(linear.energy)^2)
+datos_reg$u2 <- abs(residuals(linear.energy))
 
+linear.energy.corre <- lm( Costo ~ Produccion+ Trabajo + Capital + Combustible , data= datos_reg, weight=u2)
 
-datos_reg$Costo_2 <- datos_reg$Costo - (u2)
-datos_reg$Produccion_2 <- datos_reg$Produccion - (u2)
-datos_reg$Trabajo_2 <- datos_reg$Trabajo - (u2)
-datos_reg$Capital_2 <- datos_reg$Capital - (u2)
-datos_reg$Combustible_2 <- datos_reg$Combustible - (u2)
-
-linear.energy.corre <- lm( Costo_2 ~  Produccion_2 + Trabajo_2 + Capital_2 + Combustible_2 , data= datos_reg)
 
 summary(linear.energy.corre)
 ```
+
 Se puede observar a tráves de la función summary que cada variable explicativa es significante ya que los p-values asociados son practicamente 0 a comparación de la regresión original donde el componente del Trabajo no era estadisticamente significativo.
 La prueba F conjunta nos devuelve un P-value que tiende a 0, entonces se sigue rechazando la $H_{0}: \beta_{1}= \beta_{2}=\beta_{3}= \beta_{4}=0$.
 
-
 ### 2.6 Comparación
+
 ```{r}
 jarque.bera.test(residuals(linear.energy.corre))
 hist(residuals(linear.energy.corre))
@@ -493,7 +486,7 @@ white_lm(linear.energy.corre, interactions = FALSE)
 
 #Se crea la matriz de variables explicativas
 
-X <- as.matrix(cbind(datos_reg$Produccion_2, datos_reg$Trabajo_2, datos_reg$Capital_2, datos_reg$Combustible_2))
+X <- as.matrix(cbind(datos_reg$Produccion, datos_reg$Trabajo, datos_reg$Capital, datos_reg$Combustible))
 
 #Se computa X'X
 
@@ -510,12 +503,9 @@ indice_condicion_k
 
 
 ```
-A modo de comparación el modelo corregido presenta residuos que se distribuyen de manera normal ya que presenta un p-value de 0.4 por lo que no se rechaza la Ho, caso contrario al modelo original donde hay evidencia estadistica de residuos no normalizados 
-En cuanto a la heterocedasticidad el p-value asociado al modelo corregido aumenta a 0.02 por lo que con un nivel de significancia del 1% no rechazamos Ho donde es que no exista heterocedasticidad; sin embargo no es algo con lo que estemos tranquilos pero lo consideramos aceptable en términos del problema y de la estructura que presentan los datos  
-Por último el problema de multicolinealidad no se corrige con el nuevo modelo; sin embargo desde un punto económico y en terminos de los datos de la regresión se espera que exista una multicolinealidad fuerte entre estas variables explicativas; es esperable que la produccion, trabajo, capital, combustible mantengan una relación lineal que si no es perfecta al menos exista y nos genere ruido en la regresión.  
 
-
-
+A modo de comparación el modelo corregido presenta residuos que se distribuyen de manera normal ya que presenta un p-value de 0.4 por lo que no se rechaza la Ho, caso contrario al modelo original donde hay evidencia estadistica de residuos no normalizados En cuanto a la heterocedasticidad el p-value asociado al modelo corregido aumenta a 0.02 por lo que con un nivel de significancia del 1% no rechazamos Ho donde es que no exista heterocedasticidad; sin embargo no es algo con lo que estemos tranquilos pero lo consideramos aceptable en términos del problema y de la estructura que presentan los datos\
+Por último el problema de multicolinealidad no se corrige con el nuevo modelo; sin embargo desde un punto económico y en terminos de los datos de la regresión se espera que exista una multicolinealidad fuerte entre estas variables explicativas; es esperable que la produccion, trabajo, capital, combustible mantengan una relación lineal que si no es perfecta al menos exista y nos genere ruido en la regresión.
 
 ## 3. Análisis Housing Data
 
@@ -536,39 +526,53 @@ linear.house <- lm( PRICE ~ lotsize + bedrooms + bathrooms, data= house)
 ```
 
 ```{r, echo=FALSE, warning=FALSE}
-stargazer(linear.house, type = "text", title = "Cuadro #5: Resultados Regresión")
-coef3 = coefficients(linear.house)
+stargazer(linear.house, type = "text", title = "Cuadro #3.1: Resultados Regresión")
+
 ```
 
 Con todo lo demás constante se pueden realizar las siguientes interpretacions de los coeficientes.
 
-Para el $\beta_{0}$ (el intercepto), se interpreta como el precio que existe al ser las variables explicativas iguales a cero. Se observa que, el precio es negativo cuando las variables explicativas son cero. No tiene mucho sentido económico, puesto que no hay casas en venta con precios negativos en el mercado. 
+Para el $\beta_{0}$ (el intercepto), se interpreta como el precio que existe al ser las variables explicativas iguales a cero.
+Se observa que, el precio es negativo cuando las variables explicativas son cero.
+No tiene mucho sentido económico, puesto que no hay casas en venta con precios negativos en el mercado.
 
-Para el $\beta_{1}$ se interpreta como el aporte que genera el incremento de un metro cuadrado de la variable "lotsize" al precio de las casas. Se ve que afecta positivamente al precio. 
+Para el $\beta_{1}$ se interpreta como el aporte que genera el incremento de un metro cuadrado de la variable "lotsize" al precio de las casas.
+Se ve que afecta positivamente al precio.
 
-Para el $\beta_{2}$ se interpreta como el aporte que genera el incremento de una unidad de la variable "bedrooms" (número de habitaciones) al precio de las casas. Igual que el tamaño del lote, afecta positivamente al precio. 
+Para el $\beta_{2}$ se interpreta como el aporte que genera el incremento de una unidad de la variable "bedrooms" (número de habitaciones) al precio de las casas.
+Igual que el tamaño del lote, afecta positivamente al precio.
 
-Para el $\beta_{3}$ se interpreta como el aporte que genera el incremento de una unidad de la variable "bathrooms" (número de baños) al precio de las casas. Se ve que, al igual que "lotsize" y "bedrooms" afecta positivamente al precio, pero, el número de baños afecta en una cuantía mayor al precio. Es decir (comparándolo con las habitaciones), es más caro un baño adicional que una habitación adicional.   
-
+Para el $\beta_{3}$ se interpreta como el aporte que genera el incremento de una unidad de la variable "bathrooms" (número de baños) al precio de las casas.
+Se ve que, al igual que "lotsize" y "bedrooms" afecta positivamente al precio, pero, el número de baños afecta en una cuantía mayor al precio.
+Es decir (comparándolo con las habitaciones), es más caro un baño adicional que una habitación adicional.
 
 ### 3.2 Pruebas t
 
 Utilizando la misma función que en la pregunta anterior, y con el cuadro 5 se obtiene la información necesaria para obtener los resultados de la prueba $t$.
 
-Tomando $H_{0}: \beta_{0}=0$ (El intercepto es nulo) La prueba $t$ realizada para el intercepto, nos devuelve un P-value que es aproximadamente, 0.523. Entonces con un nivel de significancia del 5% podemos no rechazar la hipotesis nula donde el intercepto no afecta los precios, puesto que el P-value es mayor que el nivel de tolerancia a cometer el error tipo I. Esto confirma la intuición del inciso pasado, en el que se decía que, no tendría mucho sentido que eso fuese cierto (que el precio de las casas fuesen negativos)
+Tomando $H_{0}: \beta_{0}=0$ (El intercepto es nulo) La prueba $t$ realizada para el intercepto, nos devuelve un P-value que es aproximadamente, 0.523.
+Entonces con un nivel de significancia del 5% podemos no rechazar la hipotesis nula donde el intercepto no afecta los precios, puesto que el P-value es mayor que el nivel de tolerancia a cometer el error tipo I.
+Esto confirma la intuición del inciso pasado, en el que se decía que, no tendría mucho sentido que eso fuese cierto (que el precio de las casas fuesen negativos)
 
-Tomando $H_{0}: \beta_{1}=0$ (El tamaño del lote no tiene efecto sobre el precio de las casas) La prueba $t$ realizada para el tamaño de los lotes nos devuelve un P-value muy cercano a cero. Entonces se puede rechazar la hipotesis nula. Es decir, el tamaño del lote sí tiene un efecto sobre el precio de las casas.
+Tomando $H_{0}: \beta_{1}=0$ (El tamaño del lote no tiene efecto sobre el precio de las casas) La prueba $t$ realizada para el tamaño de los lotes nos devuelve un P-value muy cercano a cero.
+Entonces se puede rechazar la hipotesis nula.
+Es decir, el tamaño del lote sí tiene un efecto sobre el precio de las casas.
 
-Tomando $H_{0}: \beta_{2}=0$ (El número de habitaciones no tiene un efecto en el precio de las casas). La prueba $t$ realizada para el número de habitaciones nos devuelve un P-value cercano a cero. Entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el número de habitaciones no afectan los precios de las casas. Es decir, el número de habitaciones sí afecta al precio de las casas. 
+Tomando $H_{0}: \beta_{2}=0$ (El número de habitaciones no tiene un efecto en el precio de las casas).
+La prueba $t$ realizada para el número de habitaciones nos devuelve un P-value cercano a cero.
+Entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el número de habitaciones no afectan los precios de las casas.
+Es decir, el número de habitaciones sí afecta al precio de las casas.
 
-Tomando $H_{0}: \beta_{3}=0$ (Número de baños no tiene efecto en los precios) La prueba $t$ realizada para el número de baños nos devuelve un P-value que tiende a 0. Entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el número de baños no afecta los precios de las casas.
+Tomando $H_{0}: \beta_{3}=0$ (Número de baños no tiene efecto en los precios) La prueba $t$ realizada para el número de baños nos devuelve un P-value que tiende a 0.
+Entonces con un nivel de significancia del 5% podemos rechazar la hipotesis nula donde el número de baños no afecta los precios de las casas.
 
 ### 3.3 Prueba F
 
 Utilizando los datos de la regresión incluidos el cuadro 5 se obtiene la información necesaria para obtener los resultados de la prueba F.
 Tomando una prueba de significancia conjunta tal que nuestra hipotesis nula sea; $H_{0}: \beta_{0}= \beta_{1}=\beta_{2}= \beta_{3}=0$.
 
-La prueba F conjunta nos devuelve un P-value que tiende a 0. Entonces dado lo anterior y con un nivel de significancia del 5% se rechaza la hipotesis nula de que los Betas de forma conjunta no afectan los precios de las casas.
+La prueba F conjunta nos devuelve un P-value que tiende a 0.
+Entonces dado lo anterior y con un nivel de significancia del 5% se rechaza la hipotesis nula de que los Betas de forma conjunta no afectan los precios de las casas.
 
 Más claro: interpretando la prueba F de significancia conjunta del modelo con la función summary donde la Ho: Betas (en conjunto) = 0, se puede afirmar que los coeficientes de las variables explicativas no son cero, ya que el p-value asociado a la prueba es practicamente cero.
 
@@ -614,7 +618,7 @@ Corremos la prueba la cual nos arroja el siguiente resultado,
 ```{r White3, echo=FALSE}
 white.house<- as.data.frame(white_lm(linear.house, interactions = FALSE))
 
-stargazer(white.house, type ="text",title = "Cuadro #6: Prueba de Heterocedastidad", summary = FALSE)
+stargazer(white.house, type ="text",title = "Cuadro #3.2: Prueba de Heterocedastidad", summary = FALSE)
 
 white.house
 ```
@@ -623,7 +627,8 @@ Observando los resultados de la prueba se obtiene que con un nivel de significan
 
 #### Prueba de Multicolinealidad
 
-Inicialmente considere dentro de nuestra correlación si ha de existir un problema de multicolinealidad perfecta. Corremos un código en el modelo para observar si este detecta algún error.
+Inicialmente considere dentro de nuestra correlación si ha de existir un problema de multicolinealidad perfecta.
+Corremos un código en el modelo para observar si este detecta algún error.
 
 ```{r, echo=TRUE}
 lm( PRICE ~ lotsize + bedrooms + bathrooms, data= house, singular.ok = FALSE)
@@ -642,7 +647,8 @@ cor(x=house$bedrooms, y= house$bathrooms, method = c("pearson"))
 
 ```
 
-Visto los resultados de la matriz, vemos que sí existe una correlación entre varias variables. Por ello ahora usaremos el analisis del indice K.
+Visto los resultados de la matriz, vemos que sí existe una correlación entre varias variables.
+Por ello ahora usaremos el analisis del indice K.
 
 Procedemos en analsis del indice K donde sabemos que,
 
@@ -679,75 +685,89 @@ El Indice K nos da un número extremadamente alto, por lo que se tiene un proble
 
 #### Autocorrelación
 
-Vemos que, al tener datos de corte transversales y muchas observaciones, el problema de autocorrelación no es uno que nos deba molestar. 
-
+Vemos que, al tener datos de corte transversales y muchas observaciones, el problema de autocorrelación no es uno que nos deba molestar.
 
 ### 3.5 Corrección a las Pruebas
 
-Con el fin de remediar la violación de los supuestos, se procede de la siguiente manera. 
+Con el fin de remediar la violación de los supuestos, se procede a hacer la siguiente transformación de variables.
+El pensamiento original detrás del porqué hacemos esto es porque nuestros datos tienen magnitudes muy grandes y la distribución de baños y habitación siempre de acumula cercano a numero como 1 o 2.
+Por ello procedemos con las siguientes
 
-1. Se obtiene una nueva variable: la proporción de baños sobre habitaciones. Es probable esperar que, el número va a ser menor o igual que uno, puesto que, normalmente, se tienen más habitaciones que baños. 
+1.  Se obtiene una nueva variable: la proporción de baños sobre habitaciones.
+    Es probable esperar que, el número va a ser menor o igual que uno, puesto que, normalmente, se tienen más habitaciones que baños.
 
-2. Se obtiene el logaritmo natural de la proporción anteriormente definida. 
+    $$
+    bathbedratio = \frac{bathrooms}{bedrooms}
+    $$
 
-3. Se obtiene el logaritmo natural de los precios. 
+2.  Se obtiene el logaritmo natural de la proporción anteriormente definida.
 
-4. Obtenemos la raíz cuadrada del tamaño de los lotes. 
+    $$
+    log(bathbedratio) =log( \frac{bathrooms}{bedrooms})
+    $$
 
-Es decir: 
+3.  Se obtiene el logaritmo natural de los precios.
 
-```{r, warning = FALSE}
-house$babed_ratio <- house$bathrooms/house$bedrooms
-house$log_babedratio <- log(house$babed_ratio)
+    $$
+    log(Price)
+    $$
+
+4.  Obtenemos el logaritmo natural del tamaño de los lotes.
+
+    $$
+    log(lotsize)
+    $$
+
+```{r echo=FALSE, warning=FALSE}
+house$bathbedratio_ratio <- house$bathrooms/house$bedrooms
+house$log_bathbedratioratio <- log(house$bathbedratio_ratio)
 house$log_PRICE <- log(house$PRICE)
-house$sqrt_lotsize <- sqrt(house$lotsize)
+house$log_lotsize <- log(house$lotsize)
 ```
 
-A partir de lo anterior, corremos la siguiente regresión: 
+A partir de lo anterior, corremos la siguiente regresión:
 
 ```{r, warning = FALSE}
-linear.house1 <- lm( formula = log_PRICE ~ sqrt_lotsize + log_babedratio, data = house)
+linear.house.corr <- lm( formula = log_PRICE ~ log_lotsize + log_babedratio, data = house)
 ```
 
-```{r, echo=FALSE, warning=FALSE}
-stargazer(linear.house1, type = "text", title = "Cuadro #7: Resultados de la Nueva Regresión")
-coeflin = coefficients(linear.house1)
-```
 #### Corrigiendo la normalidad.
 
-Vemos que, al aplicar la prueba de Jaque-Bera sobre la regresión transformada, se obtiene que: 
+Vemos que, al aplicar la prueba de Jaque-Bera sobre la regresión transformada, se obtiene que:
 
-```{r Jarque-Bera 3, echo=FALSE}
-jarque.bera.test(residuals(linear.house1)/50000)
+```{r Jarque-Bera , echo=FALSE}
+jarque.bera.test(residuals(linear.house.corr)/50000)
 ```
 
-Como ahora se obtiene un P-value mayor que un error de tolerancia de 5%, no se rechaza la hipótesis nula. Por lo tanto, podemos no rechazar el hecho de que existe homocedasticidad. 
+Como ahora se obtiene un P-value mayor que un error de tolerancia de 5%, no se rechaza la hipótesis nula.
+Por lo tanto, podemos no rechazar el hecho de que existe homocedasticidad.
 
-#### Corrigiendo la heterocedasticidad. 
+#### Corrigiendo la heterocedasticidad.
 
-Si aplicamos la prueba de White sobre la nueva regresión, se obtiene que: 
+Si aplicamos la prueba de White sobre la nueva regresión, se obtiene que:
 
-```{r White3, echo=FALSE}
+```{r White55, echo=FALSE}
 white.house1<- as.data.frame(white_lm(linear.house1, interactions = FALSE))
 
-stargazer(white.house1, type ="text",title = "Cuadro #8: Prueba de Heterocedastidad", summary = FALSE)
+stargazer(white.house1, type ="text",title = "Cuadro #3.3: Prueba de Heterocedastidad", summary = FALSE)
 
-white.house1
 ```
 
-De nuevo, vemos que el nuevo P-value es mayor que el error de tolerancia al 5%, lo que significa que no se rechaza la hipótesis nula. Por lo tanto, existe homocedasticidad. 
+De nuevo, vemos que el nuevo P-value es mayor que el error de tolerancia al 5%, lo que significa que no se rechaza la hipótesis nula.
+Por lo tanto, existe homocedasticidad.
 
-#### Corrigiendo la multicolinealidad. 
+#### Corrigiendo la multicolinealidad.
 
-Aplicando nuevamente las pruebas llevadas a cabo anteriormente, se tiene que: 
+Aplicando nuevamente las pruebas llevadas a cabo anteriormente, se tiene que:
 
-Si buscamos la multicolinealidad perfecta de la nueva regresión, no la vamos a encontrar. De acuerdo con el siguiente código: 
+Si buscamos la multicolinealidad perfecta de la nueva regresión, no la vamos a encontrar.
+De acuerdo con el siguiente código:
 
 ```{r, echo=TRUE}
 lm( log_PRICE ~ sqrt_lotsize + log_babedratio, data=house, singular.ok = FALSE)
 ```
 
-Se observa que no existe una multicolinealidad perfecta entre ambas variables explicativas. 
+Se observa que no existe una multicolinealidad perfecta entre ambas variables explicativas.
 
 Ahora, si analizamos la correlación que existe entre las variables explicativas se tiene que:
 
@@ -757,16 +777,15 @@ cor(x=house$sqrt_lotsize, y= house$log_babedratio, method = c("pearson"))
 
 ```
 
-Vemos que el coeficiente es menor que 0.8, lo que indica que no se tiene un problema grave de multicolinealidad. 
+Vemos que el coeficiente es menor que 0.8, lo que indica que no se tiene un problema grave de multicolinealidad.
 
-
-Volvemos a utiilzar el análisis de los valores propios, esta vez, utilizamos el siguiente código: 
+Volvemos a utiilzar el análisis de los valores propios, esta vez, utilizamos el siguiente código:
 
 ```{r}
 
 #Se crea la matriz de variables explicativas
 
-X <- as.matrix(cbind(house$sqrt_lotsize, house$log_babedratio))
+X <- as.matrix(cbind(house$log_lotsize, house$log_babedratio))
 
 #Se computa X'X
 
@@ -783,15 +802,18 @@ indice_condicion_k<-sqrt(max(valores_propios$values))/sqrt(min(valores_propios$v
 indice_condicion_k
 ```
 
-Ahora, vemos que, el IC sigue siendo mayor que 30, pero, es mucho menor que el IC de la regresión no transformada. 
+Ahora, vemos que, el IC ahora es menor que 30, sigue persistiendo el problema pero en una menor magnitud.
 
 ### 3.6 Comparación
 
-Al comparar ambas regresiones (la original vs la transformada) podemos observar que, la heterocedasticidad en la original es mayor que en la segunda.  
+Al comparar ambas regresiones (la original vs la transformada) podemos observar que, la heterocedasticidad en la original es mayor que en la segunda.
 
 ```{r, warning = FALSE, echo = FALSE}
-stargazer(linear.house, linear.house1, type = "text", title = "Cuadro: Comparación de las Regresiones")
+stargazer(linear.house, linear.house.corr, type = "text", title = "Cuadro: Comparación de las Regresiones")
 
 ```
 
-Y, ahora, gracias a las transformaciones que se le aplicaron a las variables explicativas y dependiente, se logra corregir las violaciones a los supuestos. En el caso de la multicolinealidad, si bien no se elimina por completo, se logra disminuir la dependencia entre las variables explicativas. 
+Y, ahora, gracias a las transformaciones que se le aplicaron a las variables explicativas y dependiente, se logra corregir las violaciones a los supuestos.
+En el caso de la multicolinealidad, si bien no se elimina por completo, se logra disminuir la dependencia entre las variables explicativas.
+La cual en este caso se justifica ya que la relación de baños, habitaciones y metros cuadrados de las casa esta siempre relacionado.
+Ya que entre estas mismas se restringen porque uno no puedo construir muchos cuartos en espacios pequeños y no tiene sentido tener muchos baños para pocas habitaciones.
